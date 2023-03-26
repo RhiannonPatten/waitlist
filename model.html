@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.121">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="model_files/libs/clipboard/clipboard.min.js"></script>
+<script src="model_files/libs/quarto-html/quarto.js"></script>
+<script src="model_files/libs/quarto-html/popper.min.js"></script>
+<script src="model_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="model_files/libs/quarto-html/anchor.min.js"></script>
+<link href="model_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="model_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="model_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="model_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="model_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="model_files/libs/core-js-2.5.3/shim.min.js"></script>
+<script src="model_files/libs/react-17.0.0/react.min.js"></script>
+<script src="model_files/libs/react-17.0.0/react-dom.min.js"></script>
+<script src="model_files/libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="model_files/libs/htmlwidgets-1.6.0/htmlwidgets.js"></script>
+<link href="model_files/libs/reactable-0.4.3/reactable.css" rel="stylesheet">
+<script src="model_files/libs/reactable-binding-0.4.3/reactable.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#project-outline" id="toc-project-outline" class="nav-link active" data-scroll-target="#project-outline">Project outline</a>
+  <ul class="collapse">
+  <li><a href="#data-cleaning-and-recoding" id="toc-data-cleaning-and-recoding" class="nav-link" data-scroll-target="#data-cleaning-and-recoding">Data cleaning and recoding</a></li>
+  </ul></li>
+  <li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration">Data exploration</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">model</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<section id="project-outline" class="level2">
+<h2 class="anchored" data-anchor-id="project-outline">Project outline</h2>
+<p>We invited over 5,000 individuals on an orthopaedic waitlist to participate in a survey with the aim of characterising patients on the waitlist and determine their specific needs in order to develop an online intervention. Patients were asked questions relating to their medical history and current health status, demographics, psychological wellbeing and pain intensity. Just over 1,000 patients responded to the survey.</p>
+<p><strong>Aim (of this manuscript)</strong>: to identify individuals on an orthopaedic waitlist who have <em>elevated cardiovascular risk</em></p>
+<p>List of all variables collected:</p>
+<p>• Age</p>
+<p>• Gender</p>
+<p>• Postcode</p>
+<p>• Joint affected</p>
+<p>• Time spent on waitlist</p>
+<p>• Education level</p>
+<p>• Employment status</p>
+<p>• Indigenous status (Aus or NZ)</p>
+<p>• Preferred language</p>
+<p>• Country of birth</p>
+<p>• Osteoarthritis status (yes/no)</p>
+<p>• Medical history: presence of diabetes, high cholesterol, high blood pressure, asthma, injury, family medical history</p>
+<p>• Lifestyle:</p>
+<p>o smoking status and amount</p>
+<p>o past smoking status and amount</p>
+<p>o alcohol consumed (drinks per day)</p>
+<p>o Sleep (hours per night)</p>
+<p>o Physical activity (from the Active Australia Survey) – MET mins/week and whether they meet the physical activity guidelines</p>
+<p>• Psychological wellbeing:</p>
+<p>o Depression score (PHQ-9)</p>
+<p>o Psychological distress (K-10)</p>
+<p>o Mental wellbeing score (sWEMWBS)</p>
+<p>o Loneliness score (UCLAS)</p>
+<p>o Social connectedness score (SCS)</p>
+<p>• Quality of life (from EQ-5D)</p>
+<p>• Pain intensity:</p>
+<p>o Numerical rating scale (1-10 score)</p>
+<p>o 4-item pain intensity score</p>
+<p><strong>Independent variables</strong> to be used in modeling:</p>
+<ul>
+<li><pre><code>     Age: `age`</code></pre></li>
+<li><pre><code>     Gender: `gender`</code></pre></li>
+<li><pre><code>     Wait time: </code></pre></li>
+<li><pre><code>     OA status</code></pre></li>
+<li><pre><code>     Education</code></pre></li>
+<li><pre><code>     Indigenous status</code></pre></li>
+<li><pre><code>     Sleep</code></pre></li>
+<li><pre><code>     Alcohol amount</code></pre></li>
+<li><pre><code>     Depression score</code></pre></li>
+<li><pre><code>     Pain score</code></pre></li>
+</ul>
+<section id="data-cleaning-and-recoding" class="level3">
+<h3 class="anchored" data-anchor-id="data-cleaning-and-recoding">Data cleaning and recoding</h3>
+<p>Merging categories 4 and 5 for <code>cvdrisk_index</code></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="cvdrisk_index_merged" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">cvdrisk_index_merged</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">0</td>
+<td class="gt_row gt_right" headers="n">262</td>
+<td class="gt_row gt_right" headers="prop">0.281</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">1</td>
+<td class="gt_row gt_right" headers="n">293</td>
+<td class="gt_row gt_right" headers="prop">0.314</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">2</td>
+<td class="gt_row gt_right" headers="n">207</td>
+<td class="gt_row gt_right" headers="prop">0.222</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">3</td>
+<td class="gt_row gt_right" headers="n">123</td>
+<td class="gt_row gt_right" headers="prop">0.132</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">4</td>
+<td class="gt_row gt_right" headers="n">49</td>
+<td class="gt_row gt_right" headers="prop">0.052</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>suggestions:</li>
+</ul>
+<ol type="1">
+<li><code>age</code>: would be better to introduce ranges (15-25, 25-35, etc.) The “duration” of the range can be set</li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><code>gender</code></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="gender" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">gender</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="gender">1</td>
+<td class="gt_row gt_right" headers="n">427</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="gender">2</td>
+<td class="gt_row gt_right" headers="n">504</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="gender">3</td>
+<td class="gt_row gt_right" headers="n">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ab1c909efbe0fc0160ff" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ab1c909efbe0fc0160ff">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"gender":[1,1,1,1,1,2,2,2,2,2,3,3],"cvdrisk_index_merged":[0,1,2,3,4,0,1,2,3,4,0,1],"n":[132,120,92,58,25,128,172,115,65,24,2,1],"prop":[0.504,0.41,0.444,0.472,0.51,0.489,0.587,0.556,0.528,0.49,0.008,0.003]},"columns":[{"id":"gender","name":"gender","type":"numeric"},{"id":"cvdrisk_index_merged","name":"cvdrisk_index_merged","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"dataKey":"da209ca8e01649a2444f8b6be52c12ce"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><code>wait.time.days</code></p>
+<p>I see a few spikes there…. can this be ranges, e.g.&nbsp;short-wait, mid, long with in-betweens?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+     50     199     581     551     790    1622 </code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>OA status = <code>OA</code></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="OA" class="gt_col_heading gt_columns_bottom_border gt_left" scope="col">OA</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="OA">No</td>
+<td class="gt_row gt_right" headers="n">403</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="OA">Yes</td>
+<td class="gt_row gt_right" headers="n">531</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Education= <code>edu_level</code> ?</p>
+<p>1, Year 11 or lower |</p>
+<p>2, Year 12 or equivalent |</p>
+<p>3, TAFE or trade certificate |</p>
+<p>4, Certificate IV |</p>
+<p>5, Diploma or Advanced Diploma |</p>
+<p>6, Bachelor Degree (not including honours) |</p>
+<p>7, Honours, Graduate Certificate, Graduate Diploma |</p>
+<p>8, Postgraduate Diploma, Postgraduate degree or Masters Degree |</p>
+<p>9, Doctorate</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="edu_level" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">edu_level</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="edu_level">1</td>
+<td class="gt_row gt_right" headers="n">335</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="edu_level">2</td>
+<td class="gt_row gt_right" headers="n">150</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="edu_level">3</td>
+<td class="gt_row gt_right" headers="n">98</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="edu_level">4</td>
+<td class="gt_row gt_right" headers="n">59</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="edu_level">5</td>
+<td class="gt_row gt_right" headers="n">106</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="edu_level">6</td>
+<td class="gt_row gt_right" headers="n">90</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="edu_level">7</td>
+<td class="gt_row gt_right" headers="n">23</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="edu_level">8</td>
+<td class="gt_row gt_right" headers="n">60</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="edu_level">9</td>
+<td class="gt_row gt_right" headers="n">9</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="edu_level">NA</td>
+<td class="gt_row gt_right" headers="n">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Indigenous status: <code>aus_indigenous</code> <code>nz_indigenous</code></p>
+<p><code>aus_indigenous</code>: 0, Neither | 1, Aboriginal | 2, Torres Strait Islander | 3, Both | 4, Prefer not to say</p>
+<p>suggested recoding: 0 (no) 1(yes):1,2,3 4: merge 4 and NA</p>
+<p>Also, given a small number of 0 (no) and high 4 - merge 0 into 4</p>
+<p><code>nz_indigenous</code>: Are you Maori? See high NAs</p>
+<p>Suggested recoding 0 (no?) 1 (yes?) 4 NA</p>
+<p>Same suggestion as above: merge 0 to 4</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="aus_indigenous" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">aus_indigenous</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="aus_indigenous">0</td>
+<td class="gt_row gt_right" headers="n">512</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="aus_indigenous">1</td>
+<td class="gt_row gt_right" headers="n">15</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="aus_indigenous">2</td>
+<td class="gt_row gt_right" headers="n">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="aus_indigenous">4</td>
+<td class="gt_row gt_right" headers="n">7</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="aus_indigenous">NA</td>
+<td class="gt_row gt_right" headers="n">399</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="nz_indigenous" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">nz_indigenous</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="nz_indigenous">0</td>
+<td class="gt_row gt_right" headers="n">24</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="nz_indigenous">1</td>
+<td class="gt_row gt_right" headers="n">12</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="nz_indigenous">NA</td>
+<td class="gt_row gt_right" headers="n">898</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="aus_indigenous_recoded" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">aus_indigenous_recoded</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="aus_indigenous_recoded">0</td>
+<td class="gt_row gt_right" headers="n">512</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="aus_indigenous_recoded">1</td>
+<td class="gt_row gt_right" headers="n">16</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="aus_indigenous_recoded">4</td>
+<td class="gt_row gt_right" headers="n">406</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="nz_indigenous_recoded" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">nz_indigenous_recoded</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="nz_indigenous_recoded">0</td>
+<td class="gt_row gt_right" headers="n">24</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="nz_indigenous_recoded">1</td>
+<td class="gt_row gt_right" headers="n">12</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="nz_indigenous_recoded">4</td>
+<td class="gt_row gt_right" headers="n">898</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  indig     n
+  &lt;dbl&gt; &lt;int&gt;
+1     0   536
+2     1    28
+3     4   370</code></pre>
+</div>
+</div>
+<p>Sleep: <code>Sleep</code> &gt; <code>sleep</code> 0, Less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 | 11, 11 | 12, 12 | 13, More than 12</p>
+<p>too many</p>
+<p>Suggestion (look at the bar chart below to see distinct groupings)</p>
+<p>0-4: low sleep 5-8: moderate sleep 9-13: enough sleep</p>
+<p>but - you still have 20 in NAs for sleep. How do you want to treat them?</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="sleep" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">sleep</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">0</td>
+<td class="gt_row gt_right" headers="n">1</td>
+<td class="gt_row gt_right" headers="prop">0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">1</td>
+<td class="gt_row gt_right" headers="n">1</td>
+<td class="gt_row gt_right" headers="prop">0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">2</td>
+<td class="gt_row gt_right" headers="n">2</td>
+<td class="gt_row gt_right" headers="prop">0.002</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">3</td>
+<td class="gt_row gt_right" headers="n">19</td>
+<td class="gt_row gt_right" headers="prop">0.020</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">4</td>
+<td class="gt_row gt_right" headers="n">56</td>
+<td class="gt_row gt_right" headers="prop">0.060</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">5</td>
+<td class="gt_row gt_right" headers="n">141</td>
+<td class="gt_row gt_right" headers="prop">0.151</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">6</td>
+<td class="gt_row gt_right" headers="n">242</td>
+<td class="gt_row gt_right" headers="prop">0.259</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">7</td>
+<td class="gt_row gt_right" headers="n">235</td>
+<td class="gt_row gt_right" headers="prop">0.252</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">8</td>
+<td class="gt_row gt_right" headers="n">174</td>
+<td class="gt_row gt_right" headers="prop">0.186</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">9</td>
+<td class="gt_row gt_right" headers="n">28</td>
+<td class="gt_row gt_right" headers="prop">0.030</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">10</td>
+<td class="gt_row gt_right" headers="n">13</td>
+<td class="gt_row gt_right" headers="prop">0.014</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">11</td>
+<td class="gt_row gt_right" headers="n">1</td>
+<td class="gt_row gt_right" headers="prop">0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="sleep">13</td>
+<td class="gt_row gt_right" headers="n">1</td>
+<td class="gt_row gt_right" headers="prop">0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="sleep">NA</td>
+<td class="gt_row gt_right" headers="n">20</td>
+<td class="gt_row gt_right" headers="prop">0.021</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Alcohol amount</p>
+<p><code>alcohol</code>: Do you drink alcohol regularly?</p>
+<p><code>alcohol.amount</code>: How many alcoholic drinks do you have on average per day? 0, less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, More than 5</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="alcohol" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">alcohol</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="alcohol">0</td>
+<td class="gt_row gt_right" headers="n">736</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="alcohol">1</td>
+<td class="gt_row gt_right" headers="n">198</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="alcohol.amount" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">alcohol.amount</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="alcohol.amount">0</td>
+<td class="gt_row gt_right" headers="n">57</td>
+<td class="gt_row gt_right" headers="prop">0.061</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="alcohol.amount">1</td>
+<td class="gt_row gt_right" headers="n">41</td>
+<td class="gt_row gt_right" headers="prop">0.044</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="alcohol.amount">2</td>
+<td class="gt_row gt_right" headers="n">46</td>
+<td class="gt_row gt_right" headers="prop">0.049</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="alcohol.amount">3</td>
+<td class="gt_row gt_right" headers="n">24</td>
+<td class="gt_row gt_right" headers="prop">0.026</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="alcohol.amount">4</td>
+<td class="gt_row gt_right" headers="n">17</td>
+<td class="gt_row gt_right" headers="prop">0.018</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="alcohol.amount">5</td>
+<td class="gt_row gt_right" headers="n">3</td>
+<td class="gt_row gt_right" headers="prop">0.003</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="alcohol.amount">6</td>
+<td class="gt_row gt_right" headers="n">6</td>
+<td class="gt_row gt_right" headers="prop">0.006</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="alcohol.amount">NA</td>
+<td class="gt_row gt_right" headers="n">740</td>
+<td class="gt_row gt_right" headers="prop">0.792</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Depression score: <code>EQ5D_anxdep</code></p>
+<p>Treatment for NAs?</p>
+<p>1, I am not anxious or depressed |</p>
+<p>2, I am slightly anxious or depressed |</p>
+<p>3, I am moderately anxious or depressed |</p>
+<p>4, I am severely anxious or depressed |</p>
+<p>5, I am extremely anxious or depressed</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="EQ5D_anxdep" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">EQ5D_anxdep</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">1</td>
+<td class="gt_row gt_right" headers="n">306</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">2</td>
+<td class="gt_row gt_right" headers="n">247</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">3</td>
+<td class="gt_row gt_right" headers="n">247</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">4</td>
+<td class="gt_row gt_right" headers="n">94</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">5</td>
+<td class="gt_row gt_right" headers="n">37</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="EQ5D_anxdep">NA</td>
+<td class="gt_row gt_right" headers="n">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Pain score = <code>oa_check</code>? [age] &gt;= ‘45’ and [oa_2] = ‘1’ and [oa_3] = ‘1’</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  OA        n
+  &lt;chr&gt; &lt;int&gt;
+1 No      403
+2 Yes     531</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  oa_check     n
+     &lt;dbl&gt; &lt;int&gt;
+1        0   588
+2        1   343
+3       NA     3</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration">Data exploration</h2>
+<p>Using <code>data_clean.csv</code></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="cvdrisk_index" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">cvdrisk_index</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index">0</td>
+<td class="gt_row gt_right" headers="n">262</td>
+<td class="gt_row gt_right" headers="prop">0.281</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index">1</td>
+<td class="gt_row gt_right" headers="n">293</td>
+<td class="gt_row gt_right" headers="prop">0.314</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index">2</td>
+<td class="gt_row gt_right" headers="n">207</td>
+<td class="gt_row gt_right" headers="prop">0.222</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index">3</td>
+<td class="gt_row gt_right" headers="n">123</td>
+<td class="gt_row gt_right" headers="prop">0.132</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index">4</td>
+<td class="gt_row gt_right" headers="n">44</td>
+<td class="gt_row gt_right" headers="prop">0.047</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index">5</td>
+<td class="gt_row gt_right" headers="n">5</td>
+<td class="gt_row gt_right" headers="prop">0.005</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>T-test for category 4-5</p>
+<div class="cell">
+
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,395 @@
+---
+title: "model"
+format: html
+toc: true
+toc-depth: 3
+code-fold: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(tidymodels)
+library(gt)
+library(reactable)
+
+theme_set(theme_minimal())
+options("scipen"=100, "digits"=2)
+
+data_clean<-read_csv("data/data_clean.csv")
+```
+
+## Project outline
+
+We invited over 5,000 individuals on an orthopaedic waitlist to participate in a survey with the aim of characterising patients on the waitlist and determine their specific needs in order to develop an online intervention. Patients were asked questions relating to their medical history and current health status, demographics, psychological wellbeing and pain intensity. Just over 1,000 patients responded to the survey.
+
+
+**Aim (of this manuscript)**: to identify individuals on an orthopaedic waitlist who have *elevated cardiovascular risk*
+
+List of all variables collected:
+
+• Age
+
+• Gender
+
+• Postcode
+
+• Joint affected
+
+• Time spent on waitlist
+
+• Education level
+
+• Employment status
+
+• Indigenous status (Aus or NZ)
+
+• Preferred language
+
+• Country of birth
+
+• Osteoarthritis status (yes/no)
+
+• Medical history: presence of diabetes, high cholesterol, high blood pressure, asthma, injury, family medical history
+
+• Lifestyle:
+
+  o smoking status and amount
+
+  o past smoking status and amount
+
+  o alcohol consumed (drinks per day)
+
+  o Sleep (hours per night)
+
+  o Physical activity (from the Active Australia Survey) – MET mins/week and whether they meet the physical activity guidelines
+
+• Psychological wellbeing:
+
+  o Depression score (PHQ-9)
+
+  o Psychological distress (K-10)
+
+  o Mental wellbeing score (sWEMWBS)
+
+  o Loneliness score (UCLAS)
+
+  o Social connectedness score (SCS)
+
+• Quality of life (from EQ-5D)
+
+• Pain intensity:
+
+  o Numerical rating scale (1-10 score)
+
+  o 4-item pain intensity score
+  
+  
+**Independent variables** to be used in modeling:
+
+-          Age: `age`
+-          Gender: `gender`
+-          Wait time: 
+-          OA status
+-          Education
+-          Indigenous status
+-          Sleep
+-          Alcohol amount
+-          Depression score
+-          Pain score
+  
+  
+### Data cleaning and recoding
+  
+Merging categories 4 and 5 for `cvdrisk_index`
+
+```{r}
+
+data_clean<-data_clean%>%
+  mutate(cvdrisk_index_merged=case_when(
+    cvdrisk_index==5 ~ 4, 
+    TRUE~cvdrisk_index)
+    )
+
+res<-data_clean%>%
+  count(cvdrisk_index_merged)%>%
+  mutate(prop= round(n / sum(n), 3))
+
+res%>%gt()
+
+res%>%ggplot(aes(cvdrisk_index_merged, n, fill=as_factor(cvdrisk_index_merged)))+
+  geom_col()
+
+```
+
+- suggestions: 
+
+1. `age`: would be better to introduce ranges (15-25, 25-35, etc.) The "duration" of the range can be set
+
+```{r}
+
+data_clean%>%ggplot(aes(age))+
+  geom_histogram(binwidth = 5)+scale_x_continuous(breaks=(seq(15,90,by=10)))
+
+```
+`gender`
+
+```{r}
+
+data_clean%>%count(gender)%>%gt()
+
+data_clean%>%count(gender, cvdrisk_index_merged)%>%
+  group_by(cvdrisk_index_merged)%>%
+  mutate(prop= round(n / sum(n), 3))%>%
+  reactable()
+
+```
+`wait.time.days`
+
+I see a few spikes there....
+can this be ranges, e.g. short-wait, mid, long with in-betweens?
+
+
+```{r}
+summary(data_clean$wait.time.days)
+
+data_clean%>%ggplot(aes(wait.time.days))+
+  geom_histogram(binwidth = 5)
+
+
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), wait.time.days))+
+  geom_boxplot(outlier.colour = "red", outlier.shape = 1)
+
+
+```
+OA status = `OA`
+
+```{r}
+
+data_clean%>%count(OA)%>%gt()
+
+data_clean%>% ggplot(aes(as_factor(OA), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar(position="dodge")
+
+```
+
+Education= `edu_level` ?
+
+1, Year 11 or lower | 
+
+2, Year 12 or equivalent | 
+
+3, TAFE or trade certificate | 
+
+4, Certificate IV | 
+
+5, Diploma or Advanced Diploma | 
+
+6, Bachelor Degree (not including honours) | 
+
+7, Honours, Graduate Certificate, Graduate Diploma | 
+
+8, Postgraduate Diploma, Postgraduate degree or Masters Degree | 
+
+9, Doctorate
+
+```{r}
+
+data_clean%>%count(edu_level)%>%gt()
+
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar()+
+  facet_wrap(~edu_level) +
+  labs(title="Risk categories across 1-9 Education levels")
+
+```
+
+
+Indigenous status: `aus_indigenous` `nz_indigenous`
+
+`aus_indigenous`: 0, Neither | 1, Aboriginal | 2, Torres Strait Islander | 3, Both | 4, Prefer not to say 
+
+suggested recoding:
+0 (no)
+1(yes):1,2,3
+4: merge 4 and NA
+
+Also, given a small number of 0 (no) and high 4 - merge 0 into 4
+
+
+`nz_indigenous`: Are you Maori? 
+See high NAs
+
+Suggested recoding
+0 (no?)
+1 (yes?)
+4 NA
+
+Same suggestion as above: merge 0 to 4
+
+```{r}
+data_clean%>%count(aus_indigenous)%>%gt()
+
+data_clean%>%count(nz_indigenous)%>%gt()
+
+data_clean<-data_clean%>%mutate(
+  aus_indigenous_recoded=case_when(aus_indigenous==0 ~aus_indigenous,
+                                   aus_indigenous %in% c(1, 2,3)~1,
+                                   TRUE~4),
+  nz_indigenous_recoded=case_when(nz_indigenous %in% c(0, 1) ~ nz_indigenous,
+                                   TRUE~4)
+)
+
+data_clean%>%count(aus_indigenous_recoded)%>%gt()
+
+data_clean%>%count(nz_indigenous_recoded)%>%gt()
+
+data_clean<-data_clean%>%mutate(
+  indig=case_when (nz_indigenous_recoded==1 | aus_indigenous_recoded==1 ~ 1,
+                   nz_indigenous_recoded==0 | aus_indigenous_recoded==0 ~ 0,
+                   TRUE~4)
+)
+
+data_clean%>%count(indig)
+```
+
+Sleep: `Sleep` > `sleep`
+0, Less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 | 11, 11 | 12, 12 | 13, More than 12
+
+too many
+
+
+Suggestion (look at the bar chart below to see distinct groupings)
+
+0-4: low sleep
+5-8: moderate sleep
+9-13: enough sleep
+
+but - you still have 20 in NAs for sleep. How do you want to treat them?
+
+```{r}
+
+data_clean<-data_clean%>%
+  rename(
+    sleep=Sleep
+  )
+
+data_clean%>%count(sleep)%>%
+  mutate(prop= round(n / sum(n), 3)) %>%gt()
+
+data_clean%>% ggplot(aes(as_factor(sleep)))+
+                       geom_bar()
+
+data_clean%>% ggplot(aes(as_factor(sleep), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar(position="dodge")
+
+```
+
+Alcohol amount
+
+`alcohol`: Do you drink alcohol regularly?
+
+`alcohol.amount`: How many alcoholic drinks do you have on average per day? 
+0, less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, More than 5
+
+
+```{r}
+
+data_clean%>%count(alcohol) %>%gt()
+
+data_clean%>%count(alcohol.amount)%>%
+  mutate(prop= round(n / sum(n), 3))%>%gt()
+
+data_clean%>% ggplot(aes(as_factor(alcohol), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar(position="dodge")
+
+```
+
+Depression score: `EQ5D_anxdep`
+
+Treatment for NAs?
+
+1, I am not anxious or depressed | 
+
+2, I am slightly anxious or depressed | 
+
+3, I am moderately anxious or depressed | 
+
+4, I am severely anxious or depressed | 
+
+5, I am extremely anxious or depressed
+
+```{r}
+
+data_clean%>%count(EQ5D_anxdep) %>%gt()
+
+
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar()+
+  facet_wrap(~EQ5D_anxdep,
+    
+    labeller = labeller(EQ5D_anxdep = c(
+      "1"="I am not anxious or depressed",
+"2"="I am slightly anxious or depressed", 
+
+"3" ="I am moderately anxious or depressed",  
+
+"4"="I am severely anxious or depressed",  
+
+"5"="I am extremely anxious or depressed"
+    )))+labs(
+    title="Risk factors across depression categories",
+    fill="Risk categories",
+    x="Risk categories"
+  )
+
+```
+
+Pain score = `oa_check`? 
+[age] >= '45' and [oa_2] = '1' and [oa_3] = '1'
+
+```{r}
+
+data_clean%>%count(OA)
+
+data_clean%>%count(oa_check)
+
+data_clean%>% ggplot(aes(as_factor(oa_check), fill=as_factor(cvdrisk_index_merged)))+
+  geom_bar(position="dodge")
+```
+
+## Data exploration
+
+Using `data_clean.csv`
+
+```{r}
+res<-data_clean%>%
+  count(cvdrisk_index)%>%
+  mutate(prop= round(n / sum(n), 3)) 
+
+
+
+res%>%gt()
+
+res%>%ggplot(aes(cvdrisk_index, n, fill=as_factor(cvdrisk_index)))+
+  geom_col()
+```
+
+
+
+
+
+T-test for category 4-5
+
+```{r eval=FALSE}
+
+ttest_data<-data_clean%>%filter(cvdrisk_index %in% c(4,5))
+
+run_tt<-run_tt %>%
+  pivot_longer(-group_private, names_to = "variables", values_to = "value")
+```
+
