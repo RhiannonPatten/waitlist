@@ -122,7 +122,13 @@ res<-data_clean%>%
 res%>%gt()
 
 res%>%ggplot(aes(cvdrisk_index_merged, n, fill=as_factor(cvdrisk_index_merged)))+
-  geom_col()
+  geom_col()+
+  labs(
+    title="Risk categories",
+    x="Risk categories",
+    fill="Risk categories"
+    
+  )
 
 ```
 
@@ -153,6 +159,14 @@ data_clean%>%count(gender, cvdrisk_index_merged)%>%
 I see a few spikes there....
 can this be ranges, e.g. short-wait, mid, long with in-betweens?
 
+Suggestion:
+
+- short wait
+
+- mid wait
+
+- long wait ?
+
 
 ```{r}
 summary(data_clean$wait.time.days)
@@ -162,7 +176,12 @@ data_clean%>%ggplot(aes(wait.time.days))+
 
 
 data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), wait.time.days))+
-  geom_boxplot(outlier.colour = "red", outlier.shape = 1)
+  geom_boxplot(outlier.colour = "red", outlier.shape = 1)+
+  labs(
+    title="Waiting time",
+    x="Risk categories",
+    y="Waiting time in days"
+  )
 
 
 ```
@@ -173,7 +192,13 @@ OA status = `OA`
 data_clean%>%count(OA)%>%gt()
 
 data_clean%>% ggplot(aes(as_factor(OA), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")
+  geom_bar(position="dodge")+
+  labs(
+    title="Risk categories across OA",
+    x="OA",
+    fill="Risk categories"
+    
+  )
 
 ```
 
@@ -203,8 +228,32 @@ data_clean%>%count(edu_level)%>%gt()
 
 data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
   geom_bar()+
-  facet_wrap(~edu_level) +
-  labs(title="Risk categories across 1-9 Education levels")
+  facet_wrap(~edu_level,
+             labeller = labeller( edu_level=c(
+               "1"="Year 11 or lower", 
+
+"2"="Year 12 or equivalent",
+
+"3"="TAFE or trade certificate",
+
+"4"="Certificate IV",
+
+"5"="Diploma or Advanced Diploma",
+
+"6"="Bachelor Degree (not including honours)",
+
+"7"="Honours, Graduate Certificate, Graduate Diploma",
+
+"8"="Postgraduate Diploma, Postgraduate degree or Masters Degree",
+
+"9"="Doctorate",
+"NA"="NA"
+             )
+             )) +
+  labs(title="Risk categories across 1-9 Education levels",
+       fill="Risk categories",
+       x="Education level")
+
 
 ```
 
@@ -255,6 +304,17 @@ data_clean<-data_clean%>%mutate(
 )
 
 data_clean%>%count(indig)
+
+
+data_clean%>% ggplot(
+  aes(as_factor(indig), fill=as_factor(cvdrisk_index_merged))
+  )+
+  geom_bar(position="dodge")+
+  labs(
+    title="Indigenous",
+    fill="Risk categories"
+  )
+
 ```
 
 Sleep: `Sleep` > `sleep`
@@ -265,9 +325,10 @@ too many
 
 Suggestion (look at the bar chart below to see distinct groupings)
 
-0-4: low sleep
-5-8: moderate sleep
-9-13: enough sleep
+0-3: low sleep
+4-6: not enough
+7-8: moderate sleep
+9-13: enough (=high?) sleep
 
 but - you still have 20 in NAs for sleep. How do you want to treat them?
 
@@ -281,11 +342,60 @@ data_clean<-data_clean%>%
 data_clean%>%count(sleep)%>%
   mutate(prop= round(n / sum(n), 3)) %>%gt()
 
-data_clean%>% ggplot(aes(as_factor(sleep)))+
-                       geom_bar()
+data_clean%>% ggplot(aes(as_factor(sleep), fill=as_factor(sleep)))+
+                       geom_bar()+
+  labs(
+    title="Sleep: measured in hours",
+    fill="Sleep hrs",
+    x="Hrs of sleep"
+  )
 
-data_clean%>% ggplot(aes(as_factor(sleep), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")
+data_clean%>% ggplot(
+  aes(as_factor(sleep), fill=as_factor(cvdrisk_index_merged))
+  )+
+  geom_bar(position="dodge")+
+  labs(
+    title="Sleep: measured in hours",
+    fill="Risk categories",
+    x="Hrs of sleep"
+  )
+
+```
+
+Sleep recorded
+
+```{r}
+
+data_clean<-data_clean%>%
+  mutate(
+    sleep_recoded=case_when(
+      sleep %in% c(0:3) ~ "low",
+      sleep %in% c(4:6) ~ "not_enough",
+      sleep %in% c(7:8) ~ "moderate",
+      TRUE~"high"
+    )
+  )
+
+data_clean%>%count(sleep_recoded)%>%
+  mutate(prop= round(n / sum(n), 3)) %>%gt()
+
+data_clean%>% ggplot(aes(fct_reorder(as_factor(sleep_recoded),sleep_recoded), fill=as_factor(sleep_recoded)))+
+                       geom_bar()+
+  labs(
+    title="Sleep: measured low, moderate, high",
+    fill="Sleep categories",
+    x="Sleep"
+  )
+
+data_clean%>% ggplot(
+  aes(as_factor(sleep_recoded), fill=as_factor(cvdrisk_index_merged))
+  )+
+  geom_bar(position="dodge")+
+  labs(
+    title="Sleep categories",
+    fill="Risk categories",
+    x="Sleep"
+  )
 
 ```
 
@@ -305,7 +415,11 @@ data_clean%>%count(alcohol.amount)%>%
   mutate(prop= round(n / sum(n), 3))%>%gt()
 
 data_clean%>% ggplot(aes(as_factor(alcohol), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")
+  geom_bar(position="dodge")+labs(
+    title="Alcohol: distribution across Risk categories",
+    x= "Do you drink alcohol regularly?",
+    fill="Risk categories"
+  )
 
 ```
 
@@ -362,22 +476,14 @@ data_clean%>% ggplot(aes(as_factor(oa_check), fill=as_factor(cvdrisk_index_merge
   geom_bar(position="dodge")
 ```
 
-## Data exploration
-
-Using `data_clean.csv`
-
+Country:
 ```{r}
-res<-data_clean%>%
-  count(cvdrisk_index)%>%
-  mutate(prop= round(n / sum(n), 3)) 
-
-
-
-res%>%gt()
-
-res%>%ggplot(aes(cvdrisk_index, n, fill=as_factor(cvdrisk_index)))+
-  geom_col()
+data_clean%>%count(cob, sort=TRUE)%>%
+  mutate(prop= round(n / sum(n), 3))%>%
+  reactable(searchable = TRUE,
+            filterable=TRUE)
 ```
+
 
 
 

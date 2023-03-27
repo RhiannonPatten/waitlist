@@ -57,7 +57,6 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#data-cleaning-and-recoding" id="toc-data-cleaning-and-recoding" class="nav-link" data-scroll-target="#data-cleaning-and-recoding">Data cleaning and recoding</a></li>
   </ul></li>
-  <li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration">Data exploration</a></li>
   </ul>
 </nav>
 </div>
@@ -214,12 +213,18 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ab1c909efbe0fc0160ff" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ab1c909efbe0fc0160ff">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"gender":[1,1,1,1,1,2,2,2,2,2,3,3],"cvdrisk_index_merged":[0,1,2,3,4,0,1,2,3,4,0,1],"n":[132,120,92,58,25,128,172,115,65,24,2,1],"prop":[0.504,0.41,0.444,0.472,0.51,0.489,0.587,0.556,0.528,0.49,0.008,0.003]},"columns":[{"id":"gender","name":"gender","type":"numeric"},{"id":"cvdrisk_index_merged","name":"cvdrisk_index_merged","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"dataKey":"da209ca8e01649a2444f8b6be52c12ce"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-5a2e244ca9f1f4fd0346" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5a2e244ca9f1f4fd0346">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"gender":[1,1,1,1,1,2,2,2,2,2,3,3],"cvdrisk_index_merged":[0,1,2,3,4,0,1,2,3,4,0,1],"n":[132,120,92,58,25,128,172,115,65,24,2,1],"prop":[0.504,0.41,0.444,0.472,0.51,0.489,0.587,0.556,0.528,0.49,0.008,0.003]},"columns":[{"id":"gender","name":"gender","type":"numeric"},{"id":"cvdrisk_index_merged","name":"cvdrisk_index_merged","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"dataKey":"da209ca8e01649a2444f8b6be52c12ce"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p><code>wait.time.days</code></p>
 <p>I see a few spikes there…. can this be ranges, e.g.&nbsp;short-wait, mid, long with in-betweens?</p>
+<p>Suggestion:</p>
+<ul>
+<li><p>short wait</p></li>
+<li><p>mid wait</p></li>
+<li><p>long wait ?</p></li>
+</ul>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -445,11 +450,14 @@ ul.task-list li input[type="checkbox"] {
 2     1    28
 3     4   370</code></pre>
 </div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 <p>Sleep: <code>Sleep</code> &gt; <code>sleep</code> 0, Less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 | 11, 11 | 12, 12 | 13, More than 12</p>
 <p>too many</p>
 <p>Suggestion (look at the bar chart below to see distinct groupings)</p>
-<p>0-4: low sleep 5-8: moderate sleep 9-13: enough sleep</p>
+<p>0-3: low sleep 4-6: not enough 7-8: moderate sleep 9-13: enough (=high?) sleep</p>
 <p>but - you still have 20 in NAs for sleep. How do you want to treat them?</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -542,6 +550,48 @@ ul.task-list li input[type="checkbox"] {
 <p><img src="model_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Sleep recorded</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="sleep_recoded" class="gt_col_heading gt_columns_bottom_border gt_left" scope="col">sleep_recoded</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="sleep_recoded">high</td>
+<td class="gt_row gt_right" headers="n">63</td>
+<td class="gt_row gt_right" headers="prop">0.067</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="sleep_recoded">low</td>
+<td class="gt_row gt_right" headers="n">23</td>
+<td class="gt_row gt_right" headers="prop">0.025</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="sleep_recoded">moderate</td>
+<td class="gt_row gt_right" headers="n">409</td>
+<td class="gt_row gt_right" headers="prop">0.438</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="sleep_recoded">not_enough</td>
+<td class="gt_row gt_right" headers="n">439</td>
+<td class="gt_row gt_right" headers="prop">0.470</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <p>Alcohol amount</p>
 <p><code>alcohol</code>: Do you drink alcohol regularly?</p>
 <p><code>alcohol.amount</code>: How many alcoholic drinks do you have on average per day? 0, less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, More than 5</p>
@@ -620,7 +670,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Depression score: <code>EQ5D_anxdep</code></p>
@@ -668,7 +718,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Pain score = <code>oa_check</code>? [age] &gt;= ‘45’ and [oa_2] = ‘1’ and [oa_3] = ‘1’</p>
@@ -689,66 +739,22 @@ ul.task-list li input[type="checkbox"] {
 3       NA     3</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-</section>
-<section id="data-exploration" class="level2">
-<h2 class="anchored" data-anchor-id="data-exploration">Data exploration</h2>
-<p>Using <code>data_clean.csv</code></p>
+<p>Country:</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="gt_table table table-sm table-striped">
-<thead class="gt_col_headings">
-<tr class="header">
-<th id="cvdrisk_index" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">cvdrisk_index</th>
-<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
-<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td class="gt_row gt_right" headers="cvdrisk_index">0</td>
-<td class="gt_row gt_right" headers="n">262</td>
-<td class="gt_row gt_right" headers="prop">0.281</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="cvdrisk_index">1</td>
-<td class="gt_row gt_right" headers="n">293</td>
-<td class="gt_row gt_right" headers="prop">0.314</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_right" headers="cvdrisk_index">2</td>
-<td class="gt_row gt_right" headers="n">207</td>
-<td class="gt_row gt_right" headers="prop">0.222</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="cvdrisk_index">3</td>
-<td class="gt_row gt_right" headers="n">123</td>
-<td class="gt_row gt_right" headers="prop">0.132</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_right" headers="cvdrisk_index">4</td>
-<td class="gt_row gt_right" headers="n">44</td>
-<td class="gt_row gt_right" headers="prop">0.047</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="cvdrisk_index">5</td>
-<td class="gt_row gt_right" headers="n">5</td>
-<td class="gt_row gt_right" headers="prop">0.005</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e00fb49fce70cc096fdd" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e00fb49fce70cc096fdd">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"cob":[9,185,77,123,191,106,83,138,67,42,128,36,80,52,59,131,65,94,164,44,79,153,165,14,35,139,163,58,140,187,7,37,53,66,78,81,88,115,118,122,136,148,160,174,179,22,55,70,85,92,96,97,103,109,116,135,142,156,157,158,161,162,166,170,181,183,184,186,195],"n":[535,48,45,36,28,19,16,15,14,12,11,9,8,7,7,7,6,6,6,5,5,5,5,4,4,4,4,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"prop":[0.573,0.051,0.048,0.039,0.03,0.02,0.017,0.016,0.015,0.013,0.012,0.01,0.009,0.007,0.007,0.007,0.006,0.006,0.006,0.005,0.005,0.005,0.005,0.004,0.004,0.004,0.004,0.003,0.003,0.003,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001]},"columns":[{"id":"cob","name":"cob","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"filterable":true,"searchable":true,"dataKey":"f269d220dae0f59d10ab64324857bbf9"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>T-test for category 4-5</p>
 <div class="cell">
 
 </div>
+</section>
 </section>
 
 </main>
