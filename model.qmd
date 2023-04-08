@@ -142,16 +142,48 @@ data_clean%>%ggplot(aes(age))+
   geom_histogram(binwidth = 5)+scale_x_continuous(breaks=(seq(15,90,by=10)))
 
 ```
+
+
+Recoding age into 3 category grous (for confirmation):
+```{r}
+data_clean<-data_clean %>% mutate(
+  age_categ=case_when((age>14 & age<35)~"15-34",
+                      (age>34 & age<55)~"35-54",
+                      (age>54 & age<70)~"55-69",
+                      TRUE~"70+"
+                      )
+)
+
+data_clean%>%ggplot(
+  aes(age_categ, fill=factor(cvdrisk_index_merged))
+  )+
+   geom_bar(position = "dodge")
+
+```
+
+
 `gender`
 
 ```{r}
 
-data_clean%>%count(gender)%>%gt()
+#data_clean%>%count(gender)%>%gt()
 
-data_clean%>%count(gender, cvdrisk_index_merged)%>%
-  group_by(cvdrisk_index_merged)%>%
-  mutate(prop= round(n / sum(n), 3))%>%
-  reactable()
+data_clean<-data_clean%>%
+  mutate(
+    gender=factor(gender),
+    cvdrisk_index_merged=factor(cvdrisk_index_merged)
+  )
+  
+data_clean%>%
+  ggplot(
+    aes(gender, fill=age_categ)
+  )+
+   geom_bar(position = "dodge")
+
+data_clean%>%ggplot(
+  aes(gender, fill=factor(cvdrisk_index_merged))
+  )+
+   geom_bar(position = "dodge")
 
 ```
 `wait.time.days`
@@ -167,6 +199,7 @@ Suggestion:
 
 - long wait ?
 
+Waiting time in days converted into years
 
 ```{r}
 summary(data_clean$wait.time.days)
@@ -182,6 +215,25 @@ data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), wait.time.days))+
     x="Risk categories",
     y="Waiting time in days"
   )
+
+data_clean<-data_clean%>%
+  mutate(
+    waiting_time_yrs=factor(round(wait.time.days/365))
+  )
+
+
+data_clean%>%
+  ggplot(
+    aes(waiting_time_yrs, fill=cvdrisk_index_merged)
+  )+
+   geom_bar(position = "dodge")
+
+data_clean%>%
+  ggplot(
+    aes(cvdrisk_index_merged, fill=waiting_time_yrs)
+  )+
+   geom_bar(position = "dodge")
+
 
 
 ```
@@ -255,8 +307,29 @@ data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk
        x="Education level")
 
 
-```
 
+data_clean<-data_clean %>% mutate(
+  edu_level=factor(edu_level),
+  edu_level_categ=case_when(edu_level %in% c("1", "2") ~"yr11_yr12",
+                            edu_level %in% c("3", "4", "5")~"cert_diploma",
+                            edu_level =="6" ~"bachelor",
+                            edu_level %in% c("7", "8", "9")~"postgrad",
+                            TRUE~"not_provided"
+  )
+    
+)
+
+data_clean%>%count(edu_level_categ, sort=TRUE)
+
+
+data_clean%>% ggplot(aes(cvdrisk_index_merged, fill=cvdrisk_index_merged))+
+  geom_bar()+
+  facet_wrap(~edu_level_categ) +
+  labs(title="Risk categories Education level categories",
+       fill="Risk categories",
+       x="Education level categories")
+
+```
 
 Indigenous status: `aus_indigenous` `nz_indigenous`
 
@@ -360,11 +433,29 @@ data_clean%>% ggplot(
     x="Hrs of sleep"
   )
 
+data_clean<-data_clean %>% mutate(
+  sleep_categ=case_when(sleep<6 ~ "low_sleep",
+                        (sleep>5 & sleep<9) ~ "moderate_sleep",
+                        sleep>8 ~ "high_sleep",
+                            TRUE ~ "not provided"
+  )
+)
+
+data_clean%>% ggplot(
+  aes(sleep_categ, fill=cvdrisk_index_merged)
+  )+
+  geom_bar(position="dodge")+
+  labs(
+    title="Sleep categories",
+    fill="Risk categories",
+    x="Sleep categories"
+  )
+
 ```
 
 Sleep recorded
 
-```{r}
+```{r eval=FALSE}
 
 data_clean<-data_clean%>%
   mutate(
@@ -438,9 +529,11 @@ Treatment for NAs?
 5, I am extremely anxious or depressed
 
 ```{r}
+data_clean<-data_clean%>%mutate(
+  EQ5D_anxdep=factor(EQ5D_anxdep)
+)
 
-data_clean%>%count(EQ5D_anxdep) %>%gt()
-
+data_clean%>%count(EQ5D_anxdep)
 
 data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
   geom_bar()+
@@ -463,12 +556,20 @@ data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk
 
 ```
 
-Pain score = `oa_check`? 
-[age] >= '45' and [oa_2] = '1' and [oa_3] = '1'
+Pain score = 
+
+EQ_pain: On a scale of 0 - 10, with 0 being no pain and 10 being the worst pain possible
+
+paincat: 0 = None, <6 = Mild, <8 = Moderate, 8 or above = Severe
 
 ```{r}
 
-data_clean%>%count(OA)
+data_clean%>%count(paincat, sort=TRUE)
+
+data_clean<-data_clean%>%mutate(
+  paincat=replace_na(paincat, "not_provided")
+)
+data_clean%>%count(paincat, sort=TRUE)
 
 data_clean%>%count(oa_check)
 
@@ -485,17 +586,264 @@ data_clean%>%count(cob, sort=TRUE)%>%
 ```
 
 
+## Model
+
+Model data
+
+```{r}
+model_data<-data_clean%>%
+  select(
+    cvdrisk_index_merged,
+age_categ,
+gender,
+waiting_time_yrs,
+OA,
+edu_level_categ,
+indig,
+sleep_categ,
+alcohol,
+EQ5D_anxdep,
+paincat
+  )
+
+model_data<-model_data%>%na.omit()%>%mutate(across(everything(), factor))
+
+summary(model_data)
+```
+
+Stratification is used to split the data into training and testing subset. 
+Additionally, validation set is used for training with 80% of data allocated.
+
+```{r}
+splits      <- initial_split(model_data, strata = cvdrisk_index_merged)
+model_data_other <- training(splits)
+model_data_test  <- testing(splits)
+
+val_set <- validation_split(model_data_other, 
+                            strata = cvdrisk_index_merged, 
+                            prop = 0.80)
+
+model_recipe <- 
+  recipe(cvdrisk_index_merged ~ ., data = model_data_other) %>% 
+  step_nzv(all_predictors()) %>%
+  step_dummy(all_predictors())
+```
+
+### Penalized logistic regression (multinomial regression with glmnet)
+
+linear predictors to predict multiclass data using the multinomial distribution.
+
+
+```{r}
+lr_mod <- 
+  multinom_reg(penalty = tune(), mixture = double(1)) %>% 
+  set_engine("glmnet")
+
+lr_workflow <- 
+  workflow() %>% 
+  add_model(lr_mod) %>% 
+  add_recipe(model_recipe)
+
+lr_reg_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
+```
+
+Grid tuning for penalty values
+
+Lowest penalty values vs highest penalty values
+
+
+```{r}
+lr_reg_grid %>% top_n(-5) # lowest penalty values
+
+lr_reg_grid %>% top_n(5)  # highest penalty values
+
+```
+
+```{r}
+lr_res <- 
+  lr_workflow %>% 
+  tune_grid(val_set,
+            grid = lr_reg_grid,
+            control = control_grid(save_pred = TRUE),
+            metrics = metric_set(roc_auc))
+```
 
 
 
+```{r}
+lr_plot <- 
+  lr_res %>% 
+  collect_metrics() %>% 
+  ggplot(aes(x = penalty, y = mean)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("Area under the ROC Curve") +
+  scale_x_log10(labels = scales::label_number())
 
-T-test for category 4-5
+lr_plot 
+```
 
-```{r eval=FALSE}
+This plots shows us that model performance is generally better at the higher penalty values
 
-ttest_data<-data_clean%>%filter(cvdrisk_index %in% c(4,5))
+not all predictors are important in the model.
 
-run_tt<-run_tt %>%
-  pivot_longer(-group_private, names_to = "variables", values_to = "value")
+a large enough penalty  removes all predictors from the model, this brings the effect on the predictive accuracy with no predictors in the model.
+
+“best” value for penalty using ROC_AUC
+
+```{r}
+
+top_models <-
+  lr_res %>% 
+  show_best("roc_auc", n = 15) %>% 
+  arrange(penalty) 
+top_models
+
+```
+
+```{r}
+
+lr_best <- 
+  lr_res %>% 
+  collect_metrics() %>% 
+  arrange(penalty) %>% 
+  slice(30)
+lr_best
+```
+Validation set
+
+```{r}
+
+lr_auc <- lr_res %>% 
+  collect_predictions() %>%
+  roc_auc(
+    truth = cvdrisk_index_merged ,
+    .pred_0,
+    .pred_1,
+    .pred_2,
+    .pred_3,
+    .pred_4,
+    estimator = "macro_weighted"
+  )%>% 
+  mutate(model = "Multinomial regression")
+
+lr_res %>% 
+  collect_predictions() %>%
+  roc_curve(truth = cvdrisk_index_merged ,
+    .pred_0,
+    .pred_1,
+    .pred_2,
+    .pred_3,
+    .pred_4) %>%
+  autoplot()
+  
+```
+
+### Random Forest
+
+```{r}
+cores <- parallel::detectCores()
+
+rf_mod <- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
+  set_engine("ranger", num.threads = cores) %>% 
+  set_mode("classification")
+
+
+
+rf_workflow <- 
+  workflow() %>% 
+  add_model(rf_mod) %>% 
+  add_recipe(model_recipe)
+
+set.seed(345)
+rf_res <- 
+  rf_workflow %>% 
+  tune_grid(val_set,
+            grid = 25,
+            control = control_grid(save_pred = TRUE),
+            metrics = metric_set(roc_auc))
+
+rf_best <- 
+  rf_res %>% 
+  select_best(metric = "roc_auc")
+
+rf_best
+
+autoplot(rf_res)
+
+rf_res %>% 
+  collect_predictions()
+
+
+rf_auc <- 
+  rf_res %>% 
+  collect_predictions(parameters = rf_best) %>% 
+  roc_curve(truth = cvdrisk_index_merged ,
+    .pred_0,
+    .pred_1,
+    .pred_2,
+    .pred_3,
+    .pred_4) %>% 
+  mutate(model = "Random Forest")
+
+rf_auc
+
+bind_rows(rf_auc, lr_auc) %>% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
+  geom_path(linewidth = 1.5, alpha = 0.8) +
+  geom_abline(lty = 3) + 
+  coord_equal() + 
+  scale_color_viridis_d(option = "plasma", end = .6)
+
+```
+
+
+```{r}
+# the last model
+last_rf_mod <- 
+  rand_forest(mtry = 8, min_n = 7, trees = 1000) %>% 
+  set_engine("ranger", num.threads = cores, importance = "impurity") %>% 
+  set_mode("classification")
+
+# the last workflow
+last_rf_workflow <- 
+  rf_workflow %>% 
+  update_model(last_rf_mod)
+
+# the last fit
+set.seed(345)
+last_rf_fit <- 
+  last_rf_workflow %>% 
+  last_fit(splits)
+
+last_rf_fit
+```
+
+```{r}
+
+last_rf_fit %>% 
+  collect_metrics()
+```
+
+variable importance scores
+
+```{r}
+last_rf_fit %>% 
+  extract_fit_parsnip() %>% 
+  vip::vip(num_features = 20)
+```
+
+
+```{r}
+last_rf_fit %>% 
+  collect_predictions() %>% 
+  roc_curve(truth = cvdrisk_index_merged ,
+    .pred_0,
+    .pred_1,
+    .pred_2,
+    .pred_3,
+    .pred_4) %>% 
+  autoplot()
 ```
 
