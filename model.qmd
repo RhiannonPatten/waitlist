@@ -16,6 +16,7 @@ library(readxl)
 library(tidymodels)
 library(gt)
 library(reactable)
+library(GGally)
 
 theme_set(theme_minimal())
 options("scipen"=100, "digits"=2)
@@ -121,7 +122,7 @@ res<-data_clean%>%
 
 res%>%gt()
 
-res%>%ggplot(aes(cvdrisk_index_merged, n, fill=as_factor(cvdrisk_index_merged)))+
+res%>%ggplot(aes(cvdrisk_index_merged, prop, fill=as_factor(cvdrisk_index_merged)))+
   geom_col()+
   labs(
     title="Risk categories",
@@ -137,9 +138,12 @@ res%>%ggplot(aes(cvdrisk_index_merged, n, fill=as_factor(cvdrisk_index_merged)))
 1. `age`: would be better to introduce ranges (15-25, 25-35, etc.) The "duration" of the range can be set
 
 ```{r}
+library(scales)
 
 data_clean%>%ggplot(aes(age))+
-  geom_histogram(binwidth = 5)+scale_x_continuous(breaks=(seq(15,90,by=10)))
+  geom_histogram(binwidth = 5)+
+  scale_x_continuous(breaks=(seq(15,90,by=10)))
+  
 
 ```
 
@@ -155,9 +159,10 @@ data_clean<-data_clean %>% mutate(
 )
 
 data_clean%>%ggplot(
-  aes(age_categ, fill=factor(cvdrisk_index_merged))
+  aes(age_categ, fill=factor(cvdrisk_index_merged), by=age_categ)
   )+
-   geom_bar(position = "dodge")
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 ```
 
@@ -176,14 +181,16 @@ data_clean<-data_clean%>%
   
 data_clean%>%
   ggplot(
-    aes(gender, fill=age_categ)
+    aes(gender, fill=age_categ, by=gender )
   )+
-   geom_bar(position = "dodge")
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 data_clean%>%ggplot(
-  aes(gender, fill=factor(cvdrisk_index_merged))
+  aes(gender, fill=factor(cvdrisk_index_merged), by=gender )
   )+
-   geom_bar(position = "dodge")
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 ```
 `wait.time.days`
@@ -208,6 +215,7 @@ data_clean%>%ggplot(aes(wait.time.days))+
   geom_histogram(binwidth = 5)
 
 
+data_clean$cvdrisk_index_merged=factor(data_clean$cvdrisk_index_merged)
 data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), wait.time.days))+
   geom_boxplot(outlier.colour = "red", outlier.shape = 1)+
   labs(
@@ -224,15 +232,15 @@ data_clean<-data_clean%>%
 
 data_clean%>%
   ggplot(
-    aes(waiting_time_yrs, fill=cvdrisk_index_merged)
-  )+
-   geom_bar(position = "dodge")
+    aes(waiting_time_yrs, fill=cvdrisk_index_merged, by=waiting_time_yrs))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 data_clean%>%
   ggplot(
-    aes(cvdrisk_index_merged, fill=waiting_time_yrs)
-  )+
-   geom_bar(position = "dodge")
+    aes(cvdrisk_index_merged, fill=waiting_time_yrs, by=cvdrisk_index_merged))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 
 
@@ -243,14 +251,15 @@ OA status = `OA`
 
 data_clean%>%count(OA)%>%gt()
 
-data_clean%>% ggplot(aes(as_factor(OA), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")+
+data_clean%>% ggplot(aes(as_factor(OA), fill=as_factor(cvdrisk_index_merged), by=cvdrisk_index_merged))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")+
   labs(
     title="Risk categories across OA",
     x="OA",
     fill="Risk categories"
-    
   )
+
 
 ```
 
@@ -278,35 +287,12 @@ Education= `edu_level` ?
 
 data_clean%>%count(edu_level)%>%gt()
 
-data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar()+
-  facet_wrap(~edu_level,
-             labeller = labeller( edu_level=c(
-               "1"="Year 11 or lower", 
-
-"2"="Year 12 or equivalent",
-
-"3"="TAFE or trade certificate",
-
-"4"="Certificate IV",
-
-"5"="Diploma or Advanced Diploma",
-
-"6"="Bachelor Degree (not including honours)",
-
-"7"="Honours, Graduate Certificate, Graduate Diploma",
-
-"8"="Postgraduate Diploma, Postgraduate degree or Masters Degree",
-
-"9"="Doctorate",
-"NA"="NA"
-             )
-             )) +
-  labs(title="Risk categories across 1-9 Education levels",
-       fill="Risk categories",
-       x="Education level")
-
-
+data_clean%>% ggplot(aes(
+  as_factor(cvdrisk_index_merged), 
+  fill=as_factor(edu_level), by=cvdrisk_index_merged))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+ 
 
 data_clean<-data_clean %>% mutate(
   edu_level=factor(edu_level),
@@ -322,12 +308,11 @@ data_clean<-data_clean %>% mutate(
 data_clean%>%count(edu_level_categ, sort=TRUE)
 
 
-data_clean%>% ggplot(aes(cvdrisk_index_merged, fill=cvdrisk_index_merged))+
-  geom_bar()+
-  facet_wrap(~edu_level_categ) +
-  labs(title="Risk categories Education level categories",
-       fill="Risk categories",
-       x="Education level categories")
+data_clean%>% ggplot(aes(
+  cvdrisk_index_merged, fill=edu_level_categ, by=cvdrisk_index_merged))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+ 
 
 ```
 
@@ -380,13 +365,10 @@ data_clean%>%count(indig)
 
 
 data_clean%>% ggplot(
-  aes(as_factor(indig), fill=as_factor(cvdrisk_index_merged))
-  )+
-  geom_bar(position="dodge")+
-  labs(
-    title="Indigenous",
-    fill="Risk categories"
-  )
+  aes(as_factor(indig), fill=as_factor(cvdrisk_index_merged), by=indig))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+
 
 ```
 
@@ -415,23 +397,23 @@ data_clean<-data_clean%>%
 data_clean%>%count(sleep)%>%
   mutate(prop= round(n / sum(n), 3)) %>%gt()
 
-data_clean%>% ggplot(aes(as_factor(sleep), fill=as_factor(sleep)))+
-                       geom_bar()+
+data_clean%>% ggplot(aes(sleep))+
+                       geom_histogram()+
   labs(
     title="Sleep: measured in hours",
-    fill="Sleep hrs",
+ #   fill="Sleep hrs",
     x="Hrs of sleep"
   )
+data_clean%>% ggplot(
+  aes(as_factor(sleep),fill=as_factor(cvdrisk_index_merged), by=as_factor(sleep)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 data_clean%>% ggplot(
-  aes(as_factor(sleep), fill=as_factor(cvdrisk_index_merged))
-  )+
-  geom_bar(position="dodge")+
-  labs(
-    title="Sleep: measured in hours",
-    fill="Risk categories",
-    x="Hrs of sleep"
-  )
+  aes(fill=as_factor(sleep),x=as_factor(cvdrisk_index_merged), by=as_factor(cvdrisk_index_merged)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+
 
 data_clean<-data_clean %>% mutate(
   sleep_categ=case_when(sleep<6 ~ "low_sleep",
@@ -442,14 +424,14 @@ data_clean<-data_clean %>% mutate(
 )
 
 data_clean%>% ggplot(
-  aes(sleep_categ, fill=cvdrisk_index_merged)
-  )+
-  geom_bar(position="dodge")+
-  labs(
-    title="Sleep categories",
-    fill="Risk categories",
-    x="Sleep categories"
-  )
+  aes(sleep_categ, fill=cvdrisk_index_merged, by=as_factor(sleep_categ)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+
+data_clean%>% ggplot(
+  aes(fill=sleep_categ, x=cvdrisk_index_merged, by=as_factor(cvdrisk_index_merged)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 ```
 
@@ -479,14 +461,9 @@ data_clean%>% ggplot(aes(fct_reorder(as_factor(sleep_recoded),sleep_recoded), fi
   )
 
 data_clean%>% ggplot(
-  aes(as_factor(sleep_recoded), fill=as_factor(cvdrisk_index_merged))
-  )+
-  geom_bar(position="dodge")+
-  labs(
-    title="Sleep categories",
-    fill="Risk categories",
-    x="Sleep"
-  )
+  aes(as_factor(sleep_recoded), fill=as_factor(cvdrisk_index_merged), by=as_factor(sleep_recoded)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 ```
 
@@ -505,12 +482,9 @@ data_clean%>%count(alcohol) %>%gt()
 data_clean%>%count(alcohol.amount)%>%
   mutate(prop= round(n / sum(n), 3))%>%gt()
 
-data_clean%>% ggplot(aes(as_factor(alcohol), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")+labs(
-    title="Alcohol: distribution across Risk categories",
-    x= "Do you drink alcohol regularly?",
-    fill="Risk categories"
-  )
+data_clean%>% ggplot(aes(as_factor(alcohol), fill=as_factor(cvdrisk_index_merged), by=as_factor(alcohol)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 
 ```
 
@@ -554,6 +528,9 @@ data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk
     x="Risk categories"
   )
 
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(EQ5D_anxdep), by=as_factor(cvdrisk_index_merged)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 ```
 
 Pain score = 
@@ -573,8 +550,9 @@ data_clean%>%count(paincat, sort=TRUE)
 
 data_clean%>%count(oa_check)
 
-data_clean%>% ggplot(aes(as_factor(oa_check), fill=as_factor(cvdrisk_index_merged)))+
-  geom_bar(position="dodge")
+data_clean%>% ggplot(aes(as_factor(oa_check), fill=as_factor(cvdrisk_index_merged), by=as_factor(oa_check)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
 ```
 
 Country:
