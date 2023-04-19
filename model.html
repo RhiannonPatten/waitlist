@@ -129,13 +129,17 @@ ul.task-list li input[type="checkbox"] {
 <li><pre><code>     Education</code></pre></li>
 <li><pre><code>     Indigenous status</code></pre></li>
 <li><pre><code>     Sleep</code></pre></li>
-<li><pre><code>     Alcohol amount</code></pre></li>
+<li><pre><code>     Alcohol amount - removed</code></pre></li>
 <li><pre><code>     Depression score</code></pre></li>
 <li><pre><code>     Pain score</code></pre></li>
 </ul>
 <section id="data-cleaning-and-recoding" class="level3">
 <h3 class="anchored" data-anchor-id="data-cleaning-and-recoding">Data cleaning and recoding</h3>
-<p>Merging categories 4 and 5 for <code>cvdrisk_index</code></p>
+<p>Merging categories 4 and 5 for <code>cvdrisk_index_merged_old</code></p>
+<p>Additional merge for categories 1 and 2 for (=2) <code>cvdrisk_index_merged</code></p>
+<div class="cell">
+
+</div>
 <div class="cell">
 <div class="cell-output-display">
 <table class="gt_table table table-sm table-striped">
@@ -153,21 +157,16 @@ ul.task-list li input[type="checkbox"] {
 <td class="gt_row gt_right" headers="prop">0.281</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_right" headers="cvdrisk_index_merged">1</td>
-<td class="gt_row gt_right" headers="n">293</td>
-<td class="gt_row gt_right" headers="prop">0.314</td>
+<td class="gt_row gt_right" headers="cvdrisk_index_merged">2</td>
+<td class="gt_row gt_right" headers="n">500</td>
+<td class="gt_row gt_right" headers="prop">0.535</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_right" headers="cvdrisk_index_merged">2</td>
-<td class="gt_row gt_right" headers="n">207</td>
-<td class="gt_row gt_right" headers="prop">0.222</td>
-</tr>
-<tr class="even">
 <td class="gt_row gt_right" headers="cvdrisk_index_merged">3</td>
 <td class="gt_row gt_right" headers="n">123</td>
 <td class="gt_row gt_right" headers="prop">0.132</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td class="gt_row gt_right" headers="cvdrisk_index_merged">4</td>
 <td class="gt_row gt_right" headers="n">49</td>
 <td class="gt_row gt_right" headers="prop">0.052</td>
@@ -176,43 +175,117 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="cvdrisk_index_merged_old" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">cvdrisk_index_merged_old</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged_old">0</td>
+<td class="gt_row gt_right" headers="n">262</td>
+<td class="gt_row gt_right" headers="prop">0.281</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged_old">1</td>
+<td class="gt_row gt_right" headers="n">293</td>
+<td class="gt_row gt_right" headers="prop">0.314</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged_old">2</td>
+<td class="gt_row gt_right" headers="n">207</td>
+<td class="gt_row gt_right" headers="prop">0.222</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged_old">3</td>
+<td class="gt_row gt_right" headers="n">123</td>
+<td class="gt_row gt_right" headers="prop">0.132</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="cvdrisk_index_merged_old">4</td>
+<td class="gt_row gt_right" headers="n">49</td>
+<td class="gt_row gt_right" headers="prop">0.052</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<ul>
-<li>suggestions:</li>
-</ul>
+<p>Diabetes across risk groups</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  diabetes     n
+     &lt;dbl&gt; &lt;int&gt;
+1        0   787
+2        1   147</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 4
+  cvdrisk_index_merged_old diabetes n_diabetes freq_diabetes
+                     &lt;dbl&gt;    &lt;dbl&gt;      &lt;int&gt;         &lt;dbl&gt;
+1                        0        0        262       0.281  
+2                        1        0        279       0.299  
+3                        1        1         14       0.0150 
+4                        2        0        173       0.185  
+5                        2        1         34       0.0364 
+6                        3        0         69       0.0739 
+7                        3        1         54       0.0578 
+8                        4        0          4       0.00428
+9                        4        1         45       0.0482 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 4
+  cvdrisk_index_merged diabetes n_diabetes freq_diabetes
+                 &lt;dbl&gt;    &lt;dbl&gt;      &lt;int&gt;         &lt;dbl&gt;
+1                    0        0        262       0.281  
+2                    2        0        452       0.484  
+3                    2        1         48       0.0514 
+4                    3        0         69       0.0739 
+5                    3        1         54       0.0578 
+6                    4        0          4       0.00428
+7                    4        1         45       0.0482 </code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <ol type="1">
-<li><code>age</code>: would be better to introduce ranges (15-25, 25-35, etc.) The “duration” of the range can be set</li>
+<li><code>age</code>:</li>
 </ol>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Age: - 18-29 years - 30-49 years - 50-65 years - &gt;65 years</p>
 <p>Recoding age into 3 category grous (for confirmation):</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p><code>gender</code></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p><code>wait.time.days</code></p>
-<p>I see a few spikes there…. can this be ranges, e.g.&nbsp;short-wait, mid, long with in-betweens?</p>
-<p>Suggestion:</p>
-<ul>
-<li><p>short wait</p></li>
-<li><p>mid wait</p></li>
-<li><p>long wait ?</p></li>
-</ul>
+<p>Waiting time</p>
 <p>Waiting time in days converted into years</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -220,16 +293,27 @@ ul.task-list li input[type="checkbox"] {
      50     199     581     551     790    1622 </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>recoding per email:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  waiting_time_yrs     n
+  &lt;chr&gt;            &lt;int&gt;
+1 1_2                599
+2 above_2            127
+3 under_1            208</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-6-3.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-6-4.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>OA status = <code>OA</code></p>
@@ -255,10 +339,10 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Education= <code>edu_level</code> ?</p>
+<p>Education= <code>edu_level</code></p>
 <p>1, Year 11 or lower |</p>
 <p>2, Year 12 or equivalent |</p>
 <p>3, TAFE or trade certificate |</p>
@@ -268,6 +352,7 @@ ul.task-list li input[type="checkbox"] {
 <p>7, Honours, Graduate Certificate, Graduate Diploma |</p>
 <p>8, Postgraduate Diploma, Postgraduate degree or Masters Degree |</p>
 <p>9, Doctorate</p>
+<p>recoded per email</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="gt_table table table-sm table-striped">
@@ -322,20 +407,20 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 2
   edu_level_categ     n
   &lt;chr&gt;           &lt;int&gt;
-1 yr11_yr12         485
+1 yr11              335
 2 cert_diploma      263
-3 postgrad           92
-4 bachelor           90
+3 postgrad          182
+4 yr12              150
 5 not_provided        4</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Indigenous status: <code>aus_indigenous</code> <code>nz_indigenous</code></p>
@@ -459,7 +544,7 @@ ul.task-list li input[type="checkbox"] {
 3     4   370</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Sleep: <code>Sleep</code> &gt; <code>sleep</code> 0, Less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 | 11, 11 | 12, 12 | 13, More than 12</p>
@@ -467,6 +552,9 @@ ul.task-list li input[type="checkbox"] {
 <p>Suggestion (look at the bar chart below to see distinct groupings)</p>
 <p>0-3: low sleep 4-6: not enough 7-8: moderate sleep 9-13: enough (=high?) sleep</p>
 <p>but - you still have 20 in NAs for sleep. How do you want to treat them?</p>
+<div class="cell">
+
+</div>
 <div class="cell">
 <div class="cell-output-display">
 <table class="gt_table table table-sm table-striped">
@@ -552,134 +640,47 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-14-3.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-4.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-14-4.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-10-5.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-14-5.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Sleep recorded</p>
 <div class="cell">
 
 </div>
-<p>Alcohol amount</p>
-<p><code>alcohol</code>: Do you drink alcohol regularly?</p>
-<p><code>alcohol.amount</code>: How many alcoholic drinks do you have on average per day? 0, less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, More than 5</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="gt_table table table-sm table-striped">
-<thead class="gt_col_headings">
-<tr class="header">
-<th id="alcohol" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">alcohol</th>
-<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td class="gt_row gt_right" headers="alcohol">0</td>
-<td class="gt_row gt_right" headers="n">736</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="alcohol">1</td>
-<td class="gt_row gt_right" headers="n">198</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="cell-output-display">
-<table class="gt_table table table-sm table-striped">
-<thead class="gt_col_headings">
-<tr class="header">
-<th id="alcohol.amount" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">alcohol.amount</th>
-<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
-<th id="prop" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">prop</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td class="gt_row gt_right" headers="alcohol.amount">0</td>
-<td class="gt_row gt_right" headers="n">57</td>
-<td class="gt_row gt_right" headers="prop">0.061</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="alcohol.amount">1</td>
-<td class="gt_row gt_right" headers="n">41</td>
-<td class="gt_row gt_right" headers="prop">0.044</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_right" headers="alcohol.amount">2</td>
-<td class="gt_row gt_right" headers="n">46</td>
-<td class="gt_row gt_right" headers="prop">0.049</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="alcohol.amount">3</td>
-<td class="gt_row gt_right" headers="n">24</td>
-<td class="gt_row gt_right" headers="prop">0.026</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_right" headers="alcohol.amount">4</td>
-<td class="gt_row gt_right" headers="n">17</td>
-<td class="gt_row gt_right" headers="prop">0.018</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="alcohol.amount">5</td>
-<td class="gt_row gt_right" headers="n">3</td>
-<td class="gt_row gt_right" headers="prop">0.003</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_right" headers="alcohol.amount">6</td>
-<td class="gt_row gt_right" headers="n">6</td>
-<td class="gt_row gt_right" headers="prop">0.006</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_right" headers="alcohol.amount">NA</td>
-<td class="gt_row gt_right" headers="n">740</td>
-<td class="gt_row gt_right" headers="prop">0.792</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Depression score: <code>EQ5D_anxdep</code></p>
-<p>Treatment for NAs?</p>
-<p>1, I am not anxious or depressed |</p>
-<p>2, I am slightly anxious or depressed |</p>
-<p>3, I am moderately anxious or depressed |</p>
-<p>4, I am severely anxious or depressed |</p>
-<p>5, I am extremely anxious or depressed</p>
+<p>Depression score: <code>PHQ_cat</code></p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  EQ5D_anxdep     n
-  &lt;fct&gt;       &lt;int&gt;
-1 1             306
-2 2             247
-3 3             247
-4 4              94
-5 5              37
-6 &lt;NA&gt;            3</code></pre>
+<pre><code># A tibble: 5 × 2
+  PHQ_cat          n
+  &lt;chr&gt;        &lt;int&gt;
+1 Mild           314
+2 Moderate       234
+3 None            61
+4 Severe         276
+5 not_provided    49</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Pain score =</p>
-<p>EQ_pain: On a scale of 0 - 10, with 0 being no pain and 10 being the worst pain possible</p>
 <p>paincat: 0 = None, &lt;6 = Mild, &lt;8 = Moderate, 8 or above = Severe</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -692,35 +693,41 @@ ul.task-list li input[type="checkbox"] {
 4 None        61
 5 &lt;NA&gt;        49</code></pre>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  paincat          n
-  &lt;chr&gt;        &lt;int&gt;
-1 Mild           314
-2 Severe         276
-3 Moderate       234
-4 None            61
-5 not_provided    49</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 2
-  oa_check     n
-     &lt;dbl&gt; &lt;int&gt;
-1        0   588
-2        1   343
-3       NA     3</code></pre>
+<div class="cell-output-display">
+<p><img src="model_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Country:</p>
 <div class="cell">
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-33f971f8c7a4926edfed" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-33f971f8c7a4926edfed">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"cob":[9,185,77,123,191,106,83,138,67,42,128,36,80,52,59,131,65,94,164,44,79,153,165,14,35,139,163,58,140,187,7,37,53,66,78,81,88,115,118,122,136,148,160,174,179,22,55,70,85,92,96,97,103,109,116,135,142,156,157,158,161,162,166,170,181,183,184,186,195],"n":[535,48,45,36,28,19,16,15,14,12,11,9,8,7,7,7,6,6,6,5,5,5,5,4,4,4,4,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"prop":[0.573,0.051,0.048,0.039,0.03,0.02,0.017,0.016,0.015,0.013,0.012,0.01,0.009,0.007,0.007,0.007,0.006,0.006,0.006,0.005,0.005,0.005,0.005,0.004,0.004,0.004,0.004,0.003,0.003,0.003,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001]},"columns":[{"id":"cob","name":"cob","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"filterable":true,"searchable":true,"dataKey":"f269d220dae0f59d10ab64324857bbf9"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-260f96f1feee2f6e0733" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-260f96f1feee2f6e0733">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"cob":[9,185,77,123,191,106,83,138,67,42,128,36,80,52,59,131,65,94,164,44,79,153,165,14,35,139,163,58,140,187,7,37,53,66,78,81,88,115,118,122,136,148,160,174,179,22,55,70,85,92,96,97,103,109,116,135,142,156,157,158,161,162,166,170,181,183,184,186,195],"n":[535,48,45,36,28,19,16,15,14,12,11,9,8,7,7,7,6,6,6,5,5,5,5,4,4,4,4,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"prop":[0.573,0.051,0.048,0.039,0.03,0.02,0.017,0.016,0.015,0.013,0.012,0.01,0.009,0.007,0.007,0.007,0.006,0.006,0.006,0.005,0.005,0.005,0.005,0.004,0.004,0.004,0.004,0.003,0.003,0.003,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001]},"columns":[{"id":"cob","name":"cob","type":"numeric"},{"id":"n","name":"n","type":"numeric"},{"id":"prop","name":"prop","type":"numeric"}],"filterable":true,"searchable":true,"dataKey":"f269d220dae0f59d10ab64324857bbf9"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  income_group            n
+  &lt;chr&gt;               &lt;int&gt;
+1 High income           724
+2 Low income             14
+3 Lower middle income   140
+4 Upper middle income    56</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+  income_group        risk_0 risk_2 risk_3 risk_4
+  &lt;chr&gt;                &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+1 High income            213    392     85     34
+2 Low income               7      4      2      1
+3 Lower middle income     34     74     25      7
+4 Upper middle income      8     30     11      7</code></pre>
+</div>
+</div>
+<div class="cell">
+
 </div>
 </section>
 </section>
@@ -729,24 +736,24 @@ ul.task-list li input[type="checkbox"] {
 <p>Model data</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code> cvdrisk_index_merged age_categ   gender  waiting_time_yrs   OA     
- 0:260                15-34:131   1:426   0:208            No :401  
- 1:293                35-54:298   2:502   1:212            Yes:530  
- 2:206                55-69:347   3:  3   2:384                     
- 3:123                70+  :155           3: 84                     
- 4: 49                                    4: 43                     
-     edu_level_categ indig           sleep_categ  alcohol EQ5D_anxdep
- bachelor    : 90    0:535   high_sleep    : 43   0:733   1:306      
- cert_diploma:263    1: 28   low_sleep     :220   1:198   2:247      
- not_provided:  4    4:368   moderate_sleep:650           3:247      
- postgrad    : 92            not provided  : 18           4: 94      
- yr11_yr12   :482                                         5: 37      
-         paincat   
- Mild        :314  
- Moderate    :234  
- None        : 61  
- not_provided: 46  
- Severe      :276  </code></pre>
+<pre><code> cvdrisk_index_merged age_categ   gender  waiting_time_yrs     edu_level_categ
+ 0:262                18-29: 75   1:427   1_2    :599      cert_diploma:263   
+ 2:500                30-49:267   2:504   above_2:127      not_provided:  4   
+ 3:123                50-65:341   3:  3   under_1:208      postgrad    :182   
+ 4: 49                65+  :251                            yr11        :335   
+                                                           yr12        :150   
+ indig         sleep_categ          PHQ_cat            paincat   
+ 0:536   long        : 43   Mild        :314   Mild        :314  
+ 1: 28   low         : 79   Moderate    :234   Moderate    :234  
+ 4:370   moderate    :792   None        : 61   None        : 61  
+         not provided: 20   not_provided: 49   not_provided: 49  
+                            Severe      :276   Severe      :276  
+              income_group
+ High income        :724  
+ Low income         : 14  
+ Lower middle income:140  
+ Upper middle income: 56  
+                          </code></pre>
 </div>
 </div>
 <p>Stratification is used to split the data into training and testing subset. Additionally, validation set is used for training with 80% of data allocated.</p>
@@ -788,7 +795,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This plots shows us that model performance is generally better at the higher penalty values</p>
@@ -800,21 +807,21 @@ ul.task-list li input[type="checkbox"] {
 <pre><code># A tibble: 15 × 7
     penalty .metric .estimator  mean     n std_err .config              
       &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
- 1 0.0001   roc_auc hand_till  0.647     1      NA Preprocessor1_Model01
- 2 0.000127 roc_auc hand_till  0.647     1      NA Preprocessor1_Model02
- 3 0.000161 roc_auc hand_till  0.647     1      NA Preprocessor1_Model03
- 4 0.000204 roc_auc hand_till  0.647     1      NA Preprocessor1_Model04
- 5 0.000259 roc_auc hand_till  0.647     1      NA Preprocessor1_Model05
- 6 0.000329 roc_auc hand_till  0.647     1      NA Preprocessor1_Model06
- 7 0.0149   roc_auc hand_till  0.648     1      NA Preprocessor1_Model22
- 8 0.0189   roc_auc hand_till  0.649     1      NA Preprocessor1_Model23
- 9 0.0240   roc_auc hand_till  0.650     1      NA Preprocessor1_Model24
-10 0.0304   roc_auc hand_till  0.650     1      NA Preprocessor1_Model25
-11 0.0386   roc_auc hand_till  0.650     1      NA Preprocessor1_Model26
-12 0.0489   roc_auc hand_till  0.651     1      NA Preprocessor1_Model27
-13 0.0621   roc_auc hand_till  0.651     1      NA Preprocessor1_Model28
-14 0.0788   roc_auc hand_till  0.651     1      NA Preprocessor1_Model29
-15 0.1      roc_auc hand_till  0.652     1      NA Preprocessor1_Model30</code></pre>
+ 1 0.0001   roc_auc hand_till  0.638     1      NA Preprocessor1_Model01
+ 2 0.000127 roc_auc hand_till  0.638     1      NA Preprocessor1_Model02
+ 3 0.000161 roc_auc hand_till  0.638     1      NA Preprocessor1_Model03
+ 4 0.000204 roc_auc hand_till  0.638     1      NA Preprocessor1_Model04
+ 5 0.000259 roc_auc hand_till  0.638     1      NA Preprocessor1_Model05
+ 6 0.000329 roc_auc hand_till  0.638     1      NA Preprocessor1_Model06
+ 7 0.000418 roc_auc hand_till  0.638     1      NA Preprocessor1_Model07
+ 8 0.000530 roc_auc hand_till  0.638     1      NA Preprocessor1_Model08
+ 9 0.000672 roc_auc hand_till  0.638     1      NA Preprocessor1_Model09
+10 0.000853 roc_auc hand_till  0.638     1      NA Preprocessor1_Model10
+11 0.00108  roc_auc hand_till  0.638     1      NA Preprocessor1_Model11
+12 0.00137  roc_auc hand_till  0.638     1      NA Preprocessor1_Model12
+13 0.00174  roc_auc hand_till  0.638     1      NA Preprocessor1_Model13
+14 0.00221  roc_auc hand_till  0.638     1      NA Preprocessor1_Model14
+15 0.00281  roc_auc hand_till  0.638     1      NA Preprocessor1_Model15</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -822,13 +829,13 @@ ul.task-list li input[type="checkbox"] {
 <pre><code># A tibble: 1 × 7
   penalty .metric .estimator  mean     n std_err .config              
     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
-1     0.1 roc_auc hand_till  0.652     1      NA Preprocessor1_Model30</code></pre>
+1     0.1 roc_auc hand_till  0.628     1      NA Preprocessor1_Model30</code></pre>
 </div>
 </div>
 <p>Validation set</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -839,46 +846,45 @@ ul.task-list li input[type="checkbox"] {
 <pre><code># A tibble: 1 × 3
    mtry min_n .config              
   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                
-1     1    38 Preprocessor1_Model07</code></pre>
+1    22    39 Preprocessor1_Model23</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3,525 × 11
-   id         .pred_0 .pred_1 .pred_2 .pred_3  .pred_4  .row  mtry min_n cvdri…¹
-   &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;fct&gt;  
- 1 validation  0.589    0.181 0.227   0.00127 0.00190      9    13     7 0      
- 2 validation  0.591    0.313 0.0570  0.0384  0.000876    15    13     7 0      
- 3 validation  0.376    0.226 0.162   0.115   0.121       16    13     7 0      
- 4 validation  0.360    0.483 0.0668  0.0857  0.00511     21    13     7 0      
- 5 validation  0.0159   0.408 0.363   0.174   0.0393      24    13     7 4      
- 6 validation  0.536    0.346 0.0771  0.0409  0           27    13     7 0      
- 7 validation  0.177    0.479 0.153   0.0366  0.155       29    13     7 0      
- 8 validation  0.836    0.148 0.00635 0.00292 0.00687     39    13     7 0      
- 9 validation  0.0476   0.360 0.182   0.379   0.0305      42    13     7 0      
-10 validation  0.749    0.220 0.0287  0.00215 0           57    13     7 0      
-# … with 3,515 more rows, 1 more variable: .config &lt;chr&gt;, and abbreviated
-#   variable name ¹​cvdrisk_index_merged</code></pre>
+<pre><code># A tibble: 3,525 × 10
+   id         .pred_0 .pred_2  .pred_3 .pred_4  .row  mtry min_n cvdri…¹ .config
+   &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;fct&gt;   &lt;chr&gt;  
+ 1 validation   0.283   0.535 0.181    1.65e-3     5    12     7 0       Prepro…
+ 2 validation   0.813   0.182 0.00539  3.12e-5    16    12     7 0       Prepro…
+ 3 validation   0.160   0.784 0.0443   1.12e-2    19    12     7 0       Prepro…
+ 4 validation   0.175   0.460 0.229    1.36e-1    26    12     7 0       Prepro…
+ 5 validation   0.354   0.631 0.0127   2.05e-3    28    12     7 0       Prepro…
+ 6 validation   0.205   0.624 0.0144   1.57e-1    31    12     7 0       Prepro…
+ 7 validation   0.805   0.189 0.00668  2.33e-5    36    12     7 0       Prepro…
+ 8 validation   0.212   0.783 0.00297  2.22e-3    40    12     7 0       Prepro…
+ 9 validation   0.460   0.540 0.000425 2.91e-4    47    12     7 0       Prepro…
+10 validation   0.819   0.174 0.00351  3.4 e-3    49    12     7 0       Prepro…
+# … with 3,515 more rows, and abbreviated variable name ¹​cvdrisk_index_merged</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 705 × 5
+<pre><code># A tibble: 504 × 5
    .level .threshold specificity sensitivity model        
    &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;        
- 1 0        -Inf         0             1     Random Forest
- 2 0           0.170     0             1     Random Forest
- 3 0           0.181     0.00990       1     Random Forest
- 4 0           0.183     0.00990       0.975 Random Forest
- 5 0           0.185     0.0198        0.975 Random Forest
- 6 0           0.189     0.0297        0.975 Random Forest
- 7 0           0.192     0.0396        0.975 Random Forest
- 8 0           0.192     0.0495        0.975 Random Forest
- 9 0           0.197     0.0594        0.975 Random Forest
-10 0           0.200     0.0693        0.975 Random Forest
-# … with 695 more rows</code></pre>
+ 1 0       -Inf          0                 1 Random Forest
+ 2 0          0.0389     0                 1 Random Forest
+ 3 0          0.0461     0.00990           1 Random Forest
+ 4 0          0.0499     0.0198            1 Random Forest
+ 5 0          0.0524     0.0396            1 Random Forest
+ 6 0          0.0528     0.0495            1 Random Forest
+ 7 0          0.0532     0.0594            1 Random Forest
+ 8 0          0.0536     0.0693            1 Random Forest
+ 9 0          0.0591     0.0792            1 Random Forest
+10 0          0.0601     0.0891            1 Random Forest
+# … with 494 more rows</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-25-2.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-30-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -888,7 +894,7 @@ ul.task-list li input[type="checkbox"] {
 # A tibble: 1 × 6
   splits            id               .metrics .notes   .predictions .workflow 
   &lt;list&gt;            &lt;chr&gt;            &lt;list&gt;   &lt;list&gt;   &lt;list&gt;       &lt;list&gt;    
-1 &lt;split [696/235]&gt; train/test split &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;</code></pre>
+1 &lt;split [699/235]&gt; train/test split &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -896,19 +902,19 @@ ul.task-list li input[type="checkbox"] {
 <pre><code># A tibble: 2 × 4
   .metric  .estimator .estimate .config             
   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 accuracy multiclass     0.362 Preprocessor1_Model1
-2 roc_auc  hand_till      0.622 Preprocessor1_Model1</code></pre>
+1 accuracy multiclass     0.506 Preprocessor1_Model1
+2 roc_auc  hand_till      0.624 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 <p>variable importance scores</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="model_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="model_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>

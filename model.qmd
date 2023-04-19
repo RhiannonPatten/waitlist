@@ -99,26 +99,39 @@ List of all variables collected:
 -          Education
 -          Indigenous status
 -          Sleep
--          Alcohol amount
+-          Alcohol amount - removed
 -          Depression score
 -          Pain score
   
   
 ### Data cleaning and recoding
   
-Merging categories 4 and 5 for `cvdrisk_index`
+Merging categories 4 and 5 for `cvdrisk_index_merged_old`
+
+Additional merge for categories 1 and 2 for  (=2) `cvdrisk_index_merged`
 
 ```{r}
 
 data_clean<-data_clean%>%
-  mutate(cvdrisk_index_merged=case_when(
+  mutate(
+    cvdrisk_index_merged_old=case_when(
     cvdrisk_index==5 ~ 4, 
+    TRUE~cvdrisk_index),
+    
+    cvdrisk_index_merged=case_when(
+    cvdrisk_index==5 ~ 4,
+    cvdrisk_index==1 ~ 2,
     TRUE~cvdrisk_index)
     )
 
+```
+
+```{r}
 res<-data_clean%>%
   count(cvdrisk_index_merged)%>%
   mutate(prop= round(n / sum(n), 3))
+
+
 
 res%>%gt()
 
@@ -131,11 +144,63 @@ res%>%ggplot(aes(cvdrisk_index_merged, prop, fill=as_factor(cvdrisk_index_merged
     
   )
 
+
+res<-data_clean%>%
+  count(cvdrisk_index_merged_old)%>%
+  mutate(prop= round(n / sum(n), 3))
+
+res%>%gt()
+
+res%>%ggplot(aes(cvdrisk_index_merged_old, prop, fill=as_factor(cvdrisk_index_merged_old)))+
+  geom_col()+
+  labs(
+    title="Risk categories",
+    x="Risk categories",
+    fill="Risk categories"
+    
+  )
+
 ```
 
-- suggestions: 
 
-1. `age`: would be better to introduce ranges (15-25, 25-35, etc.) The "duration" of the range can be set
+Diabetes across risk groups
+
+```{r}
+
+data_clean%>%count(diabetes)
+
+data_clean%>%
+  group_by(cvdrisk_index_merged_old, diabetes)%>%
+  summarise(
+    n_diabetes= n()
+    ) %>%
+  ungroup()%>%
+  mutate(freq_diabetes = n_diabetes / sum(n_diabetes))%>%
+  arrange(cvdrisk_index_merged_old, diabetes)
+
+data_clean%>%
+  group_by(cvdrisk_index_merged, diabetes)%>%
+  summarise(
+    n_diabetes= n()
+    ) %>%
+  ungroup()%>%
+  mutate(freq_diabetes = n_diabetes / sum(n_diabetes))%>%
+  arrange(cvdrisk_index_merged, diabetes)
+  
+
+data_clean%>%ggplot(
+  aes(fill=as_factor(diabetes),x=as_factor(cvdrisk_index_merged_old), by=as_factor(cvdrisk_index_merged_old)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+
+data_clean%>%ggplot(
+  aes(fill=as_factor(diabetes),x=as_factor(cvdrisk_index_merged), by=as_factor(cvdrisk_index_merged)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+```
+
+
+1. `age`: 
 
 ```{r}
 library(scales)
@@ -147,14 +212,19 @@ data_clean%>%ggplot(aes(age))+
 
 ```
 
+Age:
+  -          18-29 years
+-          30-49 years
+-          50-65 years
+-          >65 years
 
 Recoding age into 3 category grous (for confirmation):
 ```{r}
 data_clean<-data_clean %>% mutate(
-  age_categ=case_when((age>14 & age<35)~"15-34",
-                      (age>34 & age<55)~"35-54",
-                      (age>54 & age<70)~"55-69",
-                      TRUE~"70+"
+  age_categ=case_when((age>14 & age<30)~"18-29",
+                      (age>29 & age<50)~"30-49",
+                      (age>49 & age<66)~"50-65",
+                      TRUE~"65+"
                       )
 )
 
@@ -193,18 +263,9 @@ data_clean%>%ggplot(
   labs(y="Proportion")
 
 ```
-`wait.time.days`
 
-I see a few spikes there....
-can this be ranges, e.g. short-wait, mid, long with in-betweens?
+Waiting time
 
-Suggestion:
-
-- short wait
-
-- mid wait
-
-- long wait ?
 
 Waiting time in days converted into years
 
@@ -224,25 +285,35 @@ data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), wait.time.days))+
     y="Waiting time in days"
   )
 
+```
+
+recoding per email:
+
+```{r}
+
 data_clean<-data_clean%>%
   mutate(
-    waiting_time_yrs=factor(round(wait.time.days/365))
+    waiting_time_yrs=factor(round(wait.time.days/365)),
+    waiting_time_yrs=case_when(
+      waiting_time_yrs==0 ~"under_1",
+      waiting_time_yrs %in% c(1,2)~"1_2",
+      TRUE~"above_2"
+    )
   )
 
+data_clean%>%count(waiting_time_yrs)
 
 data_clean%>%
   ggplot(
-    aes(waiting_time_yrs, fill=cvdrisk_index_merged, by=waiting_time_yrs))+
+    aes(waiting_time_yrs, fill=as_factor(cvdrisk_index_merged), by=waiting_time_yrs))+
    geom_bar(position = "fill")+
   labs(y="Proportion")
 
 data_clean%>%
   ggplot(
-    aes(cvdrisk_index_merged, fill=waiting_time_yrs, by=cvdrisk_index_merged))+
+    aes(as_factor(cvdrisk_index_merged), fill=waiting_time_yrs, by=cvdrisk_index_merged))+
    geom_bar(position = "fill")+
   labs(y="Proportion")
-
-
 
 ```
 OA status = `OA`
@@ -263,7 +334,7 @@ data_clean%>% ggplot(aes(as_factor(OA), fill=as_factor(cvdrisk_index_merged), by
 
 ```
 
-Education= `edu_level` ?
+Education= `edu_level` 
 
 1, Year 11 or lower | 
 
@@ -283,6 +354,8 @@ Education= `edu_level` ?
 
 9, Doctorate
 
+recoded per email
+
 ```{r}
 
 data_clean%>%count(edu_level)%>%gt()
@@ -296,10 +369,10 @@ data_clean%>% ggplot(aes(
 
 data_clean<-data_clean %>% mutate(
   edu_level=factor(edu_level),
-  edu_level_categ=case_when(edu_level %in% c("1", "2") ~"yr11_yr12",
+  edu_level_categ=case_when(edu_level %in% c("1") ~"yr11",
+                            edu_level %in% c("2") ~"yr12",
                             edu_level %in% c("3", "4", "5")~"cert_diploma",
-                            edu_level =="6" ~"bachelor",
-                            edu_level %in% c("7", "8", "9")~"postgrad",
+                            edu_level %in% c("6","7", "8", "9")~"postgrad",
                             TRUE~"not_provided"
   )
     
@@ -388,12 +461,14 @@ Suggestion (look at the bar chart below to see distinct groupings)
 but - you still have 20 in NAs for sleep. How do you want to treat them?
 
 ```{r}
-
 data_clean<-data_clean%>%
   rename(
     sleep=Sleep
   )
+```
 
+
+```{r}
 data_clean%>%count(sleep)%>%
   mutate(prop= round(n / sum(n), 3)) %>%gt()
 
@@ -414,11 +489,10 @@ data_clean%>% ggplot(
    geom_bar(position = "fill")+
   labs(y="Proportion")
 
-
 data_clean<-data_clean %>% mutate(
-  sleep_categ=case_when(sleep<6 ~ "low_sleep",
-                        (sleep>5 & sleep<9) ~ "moderate_sleep",
-                        sleep>8 ~ "high_sleep",
+  sleep_categ=case_when(sleep<5 ~ "low",
+                        (sleep>4 & sleep<9) ~ "moderate",
+                        sleep>8 ~ "long",
                             TRUE ~ "not provided"
   )
 )
@@ -467,75 +541,39 @@ data_clean%>% ggplot(
 
 ```
 
-Alcohol amount
 
-`alcohol`: Do you drink alcohol regularly?
 
-`alcohol.amount`: How many alcoholic drinks do you have on average per day? 
-0, less than 1 | 1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, More than 5
+Depression score: `PHQ_cat`
 
 
 ```{r}
 
-data_clean%>%count(alcohol) %>%gt()
-
-data_clean%>%count(alcohol.amount)%>%
-  mutate(prop= round(n / sum(n), 3))%>%gt()
-
-data_clean%>% ggplot(aes(as_factor(alcohol), fill=as_factor(cvdrisk_index_merged), by=as_factor(alcohol)))+
-   geom_bar(position = "fill")+
-  labs(y="Proportion")
-
-```
-
-Depression score: `EQ5D_anxdep`
-
-Treatment for NAs?
-
-1, I am not anxious or depressed | 
-
-2, I am slightly anxious or depressed | 
-
-3, I am moderately anxious or depressed | 
-
-4, I am severely anxious or depressed | 
-
-5, I am extremely anxious or depressed
-
-```{r}
 data_clean<-data_clean%>%mutate(
-  EQ5D_anxdep=factor(EQ5D_anxdep)
+  PHQ_cat=factor(PHQ_cat),
+  PHQ_cat=replace_na(paincat, "not_provided")
 )
 
-data_clean%>%count(EQ5D_anxdep)
+data_clean%>%count(PHQ_cat)
+```
+
+```{r}
+
 
 data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(cvdrisk_index_merged)))+
   geom_bar()+
-  facet_wrap(~EQ5D_anxdep,
-    
-    labeller = labeller(EQ5D_anxdep = c(
-      "1"="I am not anxious or depressed",
-"2"="I am slightly anxious or depressed", 
-
-"3" ="I am moderately anxious or depressed",  
-
-"4"="I am severely anxious or depressed",  
-
-"5"="I am extremely anxious or depressed"
-    )))+labs(
+  facet_wrap(~PHQ_cat)+labs(
     title="Risk factors across depression categories",
     fill="Risk categories",
     x="Risk categories"
   )
 
-data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(EQ5D_anxdep), by=as_factor(cvdrisk_index_merged)))+
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(PHQ_cat), by=as_factor(cvdrisk_index_merged)))+
    geom_bar(position = "fill")+
   labs(y="Proportion")
 ```
 
 Pain score = 
 
-EQ_pain: On a scale of 0 - 10, with 0 being no pain and 10 being the worst pain possible
 
 paincat: 0 = None, <6 = Mild, <8 = Moderate, 8 or above = Severe
 
@@ -546,13 +584,16 @@ data_clean%>%count(paincat, sort=TRUE)
 data_clean<-data_clean%>%mutate(
   paincat=replace_na(paincat, "not_provided")
 )
-data_clean%>%count(paincat, sort=TRUE)
 
-data_clean%>%count(oa_check)
 
-data_clean%>% ggplot(aes(as_factor(oa_check), fill=as_factor(cvdrisk_index_merged), by=as_factor(oa_check)))+
+data_clean%>% ggplot(aes(as_factor(paincat), fill=as_factor(cvdrisk_index_merged), by=as_factor(paincat)))+
    geom_bar(position = "fill")+
   labs(y="Proportion")
+
+data_clean%>% ggplot(aes(as_factor(cvdrisk_index_merged), fill=as_factor(paincat), by=as_factor(cvdrisk_index_merged)))+
+   geom_bar(position = "fill")+
+  labs(y="Proportion")
+
 ```
 
 Country:
@@ -561,6 +602,35 @@ data_clean%>%count(cob, sort=TRUE)%>%
   mutate(prop= round(n / sum(n), 3))%>%
   reactable(searchable = TRUE,
             filterable=TRUE)
+
+#merging recoded countries
+
+data_countries<-readxl::read_excel("/Users/e5028514/Desktop/waitlist/data/Waitlist_baseline_mp.xlsx", sheet=4)%>%select(
+  country_name, country_code
+)
+
+data_clean$cob<-factor(data_clean$cob)
+
+data_clean<-left_join(data_clean,data_countries, by=c("cob"="country_code") )
+
+wb_countries<-readxl::read_excel("/Users/e5028514/Desktop/waitlist/data/world_bank_countries.xlsx")%>%janitor::clean_names()
+
+data_clean<-left_join(data_clean, wb_countries, by=c("country_name"="economy"))
+
+data_clean%>%count(income_group)
+
+data_clean%>%count(income_group, cvdrisk_index_merged)%>%
+  pivot_wider(names_from=cvdrisk_index_merged, 
+              values_from=n,
+              names_prefix="risk_")
+
+
+
+```
+
+```{r}
+data_clean%>%write_csv("data/data_clean_mp.csv")
+
 ```
 
 
@@ -575,13 +645,12 @@ model_data<-data_clean%>%
 age_categ,
 gender,
 waiting_time_yrs,
-OA,
 edu_level_categ,
 indig,
 sleep_categ,
-alcohol,
-EQ5D_anxdep,
-paincat
+PHQ_cat,
+paincat,
+income_group
   )
 
 model_data<-model_data%>%na.omit()%>%mutate(across(everything(), factor))
@@ -697,7 +766,7 @@ lr_auc <- lr_res %>%
   roc_auc(
     truth = cvdrisk_index_merged ,
     .pred_0,
-    .pred_1,
+  #  .pred_1,
     .pred_2,
     .pred_3,
     .pred_4,
@@ -709,7 +778,7 @@ lr_res %>%
   collect_predictions() %>%
   roc_curve(truth = cvdrisk_index_merged ,
     .pred_0,
-    .pred_1,
+#    .pred_1,
     .pred_2,
     .pred_3,
     .pred_4) %>%
@@ -759,7 +828,7 @@ rf_auc <-
   collect_predictions(parameters = rf_best) %>% 
   roc_curve(truth = cvdrisk_index_merged ,
     .pred_0,
-    .pred_1,
+ #   .pred_1,
     .pred_2,
     .pred_3,
     .pred_4) %>% 
@@ -818,7 +887,7 @@ last_rf_fit %>%
   collect_predictions() %>% 
   roc_curve(truth = cvdrisk_index_merged ,
     .pred_0,
-    .pred_1,
+ #   .pred_1,
     .pred_2,
     .pred_3,
     .pred_4) %>% 
