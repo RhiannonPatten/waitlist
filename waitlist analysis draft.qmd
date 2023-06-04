@@ -1,0 +1,372 @@
+---
+title: "data analysis"
+format: html
+toc: true
+toc-location: body
+toc-depth: 3
+code-fold: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(lubridate)
+library(DataExplorer)
+library(caret)
+library(recipeselectors)
+library(psych)
+library(gt)
+
+
+
+theme_set(theme_minimal())
+options("scipen"=99, digits=2)
+```
+
+
+```{r}
+data_clean<-read_csv("data/data_clean_mp.csv")
+
+data_clean<-data_clean%>%mutate(
+  date_referral=as_date(date_referral),
+  dob=as_date(date_referral)
+)
+```
+
+
+
+## Data analysis 
+
+### Description of the data re statistical aspect:
+  - variables and measurement
+  - transformation of variables, including categories
+  
+```{r}
+model_data<-data_clean%>%
+  select(
+    cvdrisk_index_merged,
+age_categ,
+gender,
+waiting_time_yrs,
+edu_level_categ,
+indig,
+sleep_categ,
+PHQ_cat,
+paincat,
+income_group
+  )
+
+model_data<-model_data%>%na.omit()%>%mutate(across(everything(), factor))
+
+describe(model_data)%>%gt()
+
+skimr::skim(model_data)%>%gt()
+```
+  
+Data stats  
+  
+```{r}
+plot_intro(model_data)
+```
+
+Values in data
+
+```{r}
+plot_bar(model_data)
+```
+```{r}
+
+model_data %>%
+  pivot_longer(age_categ:income_group) %>%
+  ggplot(aes(y = value, fill = cvdrisk_index_merged)) +
+  geom_bar(position = "fill") +
+  facet_wrap(vars(name), scales = "free", ncol = 2) +
+  labs(x = NULL, y = NULL, fill = NULL)
+```
+
+
+
+
+Intro correlation
+
+```{r}
+plot_correlation(model_data)
+
+
+```
+  
+  
+### Initial model - imbalance data
+
+#### V-Fold Cross-Validation - no repeats
+
+V-fold cross-validation (also known as k-fold cross-validation) randomly splits the data into V groups of roughly equal size (called "folds"). A resample of the analysis data consists of V-1 of the folds while the assessment set contains the final fold. In basic V-fold cross-validation (i.e. no repeats), the number of resamples is equal to V. (v=10)
+
+```{r}
+set.seed(123)
+
+data_split<-initial_split(model_data, strata=cvdrisk_index_merged)
+data_train<-training(data_split)
+data_test<-testing(data_split)
+  
+data_folds <- vfold_cv(data_train, v = 10, strata = cvdrisk_index_merged)
+data_folds
+```
+
+Metrics used to assess the model
+
+
+```{r eval=FALSE}
+data_metrics <- metric_set(mn_log_loss, roc_auc, accuracy, sensitivity, specificity)
+```
+
+```{r}
+
+data_rec <- recipe(cvdrisk_index_merged ~ ., data = data_train) %>%
+  step_nzv(all_predictors())
+
+data_rec
+prep(data_rec)
+```
+ **Bagged tree model** 
+ 
+[ Bagging ensemble model](https://baguette.tidymodels.org/)
+
+```{r}
+library(baguette)
+
+bag_spec <-
+  bag_tree(min_n = 10) %>%
+  set_engine("rpart", times = 25) %>%
+  set_mode("classification")
+
+imb_wf <-
+  workflow() %>%
+  add_recipe(data_rec) %>%
+  add_model(bag_spec)
+
+imb_fit <- fit(imb_wf, data = data_train
+               )
+imb_fit
+```
+ 
+Importance of variable is shown in the `value`: 
+
+Most important ones:
+
+-edu_level_categ
+
+- PHQ_cat
+
+- age_categ
+
+interestingly - paincat has the lowest importance
+
+
+**Model fitting using resamples**
+
+```{r}
+doParallel::registerDoParallel()
+
+set.seed(123)
+
+data_metrics <- metric_set(mn_log_loss, roc_auc, pr_auc, accuracy)
+
+imb_rs <-
+  fit_resamples(
+    imb_wf,
+    resamples = data_folds,
+    metrics=data_metrics
+  )
+
+collect_metrics(imb_rs)
+```
+
+### Addressing class imbalances
+
+Class imbalance refers to the cases where the distribution of classes in the data is uneven, or significantly skewed. In this case a particular class has a larger number of data points compared to other classes. 
+Such imbalance generally leads to results biased towards the majority class which may show higher accuracy in prediction most of the time, while the minority class tends to show poor performance. In severe cases minority class can be completely ignored. This represent a serious issue as generally, it is the minority class is the class of interest, e.g. critical rare events or anomalies.
+
+While class imbalances is a challenge in machine learning tasks, such cases are quite common in practice and there are different techniques to address them. These techniques include resampling, cost-sensitive learning, algorithmic techniques (i.e. the use of algorithms that are capable of handing class imbalances, such as decision trees or ensember learning approaches), data augmentation approaches (e.g. under/oversampling) and anomaly detection. 
+
+Class imbalances approaches - brief statement
+
+Class imbalances approaches used in the study - brief statement
+
+Applying SMOTE Algorithm: generates new examples of the minority class using nearest neighbors of these cases.
+
+```{r}
+library(themis)
+bal_rec <- data_rec %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_smote(cvdrisk_index_merged)%>%
+  step_normalize(all_predictors())
+
+bal_wf <-
+  workflow() %>%
+  add_recipe(bal_rec) %>%
+  add_model(bag_spec)
+
+set.seed(234)
+bal_rs <-
+  fit_resamples(
+    bal_wf,
+    resamples = data_folds,
+    metrics = data_metrics
+  )
+
+collect_metrics(bal_rs)
+
+```
+
+### random forest
+
+
+
+```{r}
+library(stacks)
+ctrl_grid <- control_stack_grid()
+
+rand_forest_spec <- 
+  rand_forest(
+    mtry = tune(),
+    min_n = tune(),
+    trees = 500
+  ) %>%
+  set_mode("classification") %>%
+  set_engine("ranger")
+
+rand_forest_wflow <-
+  workflow() %>%
+  add_recipe(bal_rec)%>%
+  add_model(rand_forest_spec)
+
+rand_forest_res <- 
+  tune_grid(
+    object = rand_forest_wflow, 
+    resamples = data_folds, 
+    grid = 10,
+    control = ctrl_grid
+  )
+
+collect_metrics(rand_forest_res)%>% arrange(.metric, desc(mean))
+
+
+```
+
+```{r}
+autoplot(rand_forest_res)
+```
+### Neural network model 
+
+```{r}
+nnet_spec <-
+  mlp(hidden_units = tune(), penalty = tune(), epochs = tune()) %>%
+  set_mode("classification") %>%
+  set_engine("nnet")
+
+
+nnet_wflow <- 
+  workflow() %>%
+  add_recipe(bal_rec)%>%
+  add_model(nnet_spec) 
+
+nnet_res <-
+  tune_grid(
+    object = nnet_wflow, 
+    resamples = data_folds, 
+    grid = 10,
+    control = ctrl_grid
+  )
+
+collect_metrics(nnet_res)%>% arrange(.metric, desc(mean))
+```
+
+```{r}
+autoplot(nnet_res)
+```
+
+Stacking results
+
+```{r}
+model_st <- 
+  # initialize the stack
+  stacks() %>%
+  # add candidate members
+  add_candidates(rand_forest_res) %>%
+  add_candidates(nnet_res) %>%
+  # determine how to combine their predictions
+  blend_predictions() %>%
+  # fit the candidates with nonzero stacking coefficients
+  fit_members()
+
+model_st
+```
+
+
+
+```{r}
+
+autoplot(model_st)
+```
+
+
+
+```{r}
+
+autoplot(model_st, type = "members")
+```
+
+
+
+```{r}
+
+autoplot(model_st, type = "weights")
+```
+
+### Evaluating on test data
+
+```{r}
+
+data_pred <-
+  data_test %>%
+  bind_cols(predict(model_st, ., type = "prob"))
+```
+
+```{r}
+yardstick::roc_auc(
+  data_pred,
+  truth = cvdrisk_index_merged,
+  contains(".pred_")
+  )
+```
+```{r}
+
+data_pred <-
+  data_test %>%
+  select(cvdrisk_index_merged) %>%
+  bind_cols(
+    predict(
+      model_st,
+      data_test,
+      type = "class",
+      members = TRUE
+      )
+    )
+```
+
+
+```{r}
+
+map(
+  colnames(data_pred),
+  ~mean(data_pred$cvdrisk_index_merged == pull(data_pred, .x))
+) %>%
+  set_names(colnames(data_pred)) %>%
+  as_tibble() %>%
+  pivot_longer(c(everything(), -cvdrisk_index_merged))
+```
+

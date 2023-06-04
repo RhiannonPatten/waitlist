@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.121">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>data analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="waitlist analysis draft_files/libs/clipboard/clipboard.min.js"></script>
+<script src="waitlist analysis draft_files/libs/quarto-html/quarto.js"></script>
+<script src="waitlist analysis draft_files/libs/quarto-html/popper.min.js"></script>
+<script src="waitlist analysis draft_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="waitlist analysis draft_files/libs/quarto-html/anchor.min.js"></script>
+<link href="waitlist analysis draft_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="waitlist analysis draft_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="waitlist analysis draft_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="waitlist analysis draft_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="waitlist analysis draft_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">data analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+<nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#data-analysis" id="toc-data-analysis">Data analysis</a>
+  <ul>
+  <li><a href="#description-of-the-data-re-statistical-aspect" id="toc-description-of-the-data-re-statistical-aspect">Description of the data re statistical aspect:</a></li>
+  <li><a href="#initial-model---imbalance-data" id="toc-initial-model---imbalance-data">Initial model - imbalance data</a></li>
+  <li><a href="#addressing-class-imbalances" id="toc-addressing-class-imbalances">Addressing class imbalances</a></li>
+  <li><a href="#random-forest" id="toc-random-forest">random forest</a></li>
+  <li><a href="#neural-network-model" id="toc-neural-network-model">Neural network model</a></li>
+  <li><a href="#evaluating-on-test-data" id="toc-evaluating-on-test-data">Evaluating on test data</a></li>
+  </ul></li>
+  </ul>
+</nav>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<section id="data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="data-analysis">Data analysis</h2>
+<section id="description-of-the-data-re-statistical-aspect" class="level3">
+<h3 class="anchored" data-anchor-id="description-of-the-data-re-statistical-aspect">Description of the data re statistical aspect:</h3>
+<ul>
+<li>variables and measurement</li>
+<li>transformation of variables, including categories</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="vars" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">vars</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n</th>
+<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">mean</th>
+<th id="sd" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">sd</th>
+<th id="median" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">median</th>
+<th id="trimmed" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">trimmed</th>
+<th id="mad" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">mad</th>
+<th id="min" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">min</th>
+<th id="max" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">max</th>
+<th id="range" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">range</th>
+<th id="skew" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">skew</th>
+<th id="kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">kurtosis</th>
+<th id="se" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">se</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="vars">1</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">2.0</td>
+<td class="gt_row gt_right" headers="sd">0.79</td>
+<td class="gt_row gt_right" headers="median">2</td>
+<td class="gt_row gt_right" headers="trimmed">1.9</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">4</td>
+<td class="gt_row gt_right" headers="range">3</td>
+<td class="gt_row gt_right" headers="skew">0.72</td>
+<td class="gt_row gt_right" headers="kurtosis">0.39</td>
+<td class="gt_row gt_right" headers="se">0.026</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="vars">2</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">2.8</td>
+<td class="gt_row gt_right" headers="sd">0.92</td>
+<td class="gt_row gt_right" headers="median">3</td>
+<td class="gt_row gt_right" headers="trimmed">2.9</td>
+<td class="gt_row gt_right" headers="mad">1.5</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">4</td>
+<td class="gt_row gt_right" headers="range">3</td>
+<td class="gt_row gt_right" headers="skew">-0.26</td>
+<td class="gt_row gt_right" headers="kurtosis">-0.85</td>
+<td class="gt_row gt_right" headers="se">0.030</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="vars">3</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">1.5</td>
+<td class="gt_row gt_right" headers="sd">0.50</td>
+<td class="gt_row gt_right" headers="median">2</td>
+<td class="gt_row gt_right" headers="trimmed">1.6</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">3</td>
+<td class="gt_row gt_right" headers="range">2</td>
+<td class="gt_row gt_right" headers="skew">-0.11</td>
+<td class="gt_row gt_right" headers="kurtosis">-1.80</td>
+<td class="gt_row gt_right" headers="se">0.017</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="vars">4</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">1.6</td>
+<td class="gt_row gt_right" headers="sd">0.83</td>
+<td class="gt_row gt_right" headers="median">1</td>
+<td class="gt_row gt_right" headers="trimmed">1.5</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">3</td>
+<td class="gt_row gt_right" headers="range">2</td>
+<td class="gt_row gt_right" headers="skew">0.91</td>
+<td class="gt_row gt_right" headers="kurtosis">-0.94</td>
+<td class="gt_row gt_right" headers="se">0.027</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="vars">5</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">3.1</td>
+<td class="gt_row gt_right" headers="sd">1.46</td>
+<td class="gt_row gt_right" headers="median">4</td>
+<td class="gt_row gt_right" headers="trimmed">3.1</td>
+<td class="gt_row gt_right" headers="mad">1.5</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">5</td>
+<td class="gt_row gt_right" headers="range">4</td>
+<td class="gt_row gt_right" headers="skew">-0.43</td>
+<td class="gt_row gt_right" headers="kurtosis">-1.25</td>
+<td class="gt_row gt_right" headers="se">0.048</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="vars">6</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">1.8</td>
+<td class="gt_row gt_right" headers="sd">0.97</td>
+<td class="gt_row gt_right" headers="median">1</td>
+<td class="gt_row gt_right" headers="trimmed">1.8</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">3</td>
+<td class="gt_row gt_right" headers="range">2</td>
+<td class="gt_row gt_right" headers="skew">0.36</td>
+<td class="gt_row gt_right" headers="kurtosis">-1.84</td>
+<td class="gt_row gt_right" headers="se">0.032</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="vars">7</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">2.8</td>
+<td class="gt_row gt_right" headers="sd">0.52</td>
+<td class="gt_row gt_right" headers="median">3</td>
+<td class="gt_row gt_right" headers="trimmed">3.0</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">4</td>
+<td class="gt_row gt_right" headers="range">3</td>
+<td class="gt_row gt_right" headers="skew">-2.21</td>
+<td class="gt_row gt_right" headers="kurtosis">5.67</td>
+<td class="gt_row gt_right" headers="se">0.017</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="vars">8</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">2.7</td>
+<td class="gt_row gt_right" headers="sd">1.66</td>
+<td class="gt_row gt_right" headers="median">2</td>
+<td class="gt_row gt_right" headers="trimmed">2.7</td>
+<td class="gt_row gt_right" headers="mad">1.5</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">5</td>
+<td class="gt_row gt_right" headers="range">4</td>
+<td class="gt_row gt_right" headers="skew">0.39</td>
+<td class="gt_row gt_right" headers="kurtosis">-1.53</td>
+<td class="gt_row gt_right" headers="se">0.054</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="vars">9</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">2.7</td>
+<td class="gt_row gt_right" headers="sd">1.66</td>
+<td class="gt_row gt_right" headers="median">2</td>
+<td class="gt_row gt_right" headers="trimmed">2.7</td>
+<td class="gt_row gt_right" headers="mad">1.5</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">5</td>
+<td class="gt_row gt_right" headers="range">4</td>
+<td class="gt_row gt_right" headers="skew">0.39</td>
+<td class="gt_row gt_right" headers="kurtosis">-1.53</td>
+<td class="gt_row gt_right" headers="se">0.054</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="vars">10</td>
+<td class="gt_row gt_right" headers="n">934</td>
+<td class="gt_row gt_right" headers="mean">1.5</td>
+<td class="gt_row gt_right" headers="sd">0.95</td>
+<td class="gt_row gt_right" headers="median">1</td>
+<td class="gt_row gt_right" headers="trimmed">1.3</td>
+<td class="gt_row gt_right" headers="mad">0.0</td>
+<td class="gt_row gt_right" headers="min">1</td>
+<td class="gt_row gt_right" headers="max">4</td>
+<td class="gt_row gt_right" headers="range">3</td>
+<td class="gt_row gt_right" headers="skew">1.57</td>
+<td class="gt_row gt_right" headers="kurtosis">0.84</td>
+<td class="gt_row gt_right" headers="se">0.031</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output-display">
+<table class="gt_table table table-sm table-striped">
+<thead class="gt_col_headings">
+<tr class="header">
+<th id="skim_type" class="gt_col_heading gt_columns_bottom_border gt_left" scope="col">skim_type</th>
+<th id="skim_variable" class="gt_col_heading gt_columns_bottom_border gt_left" scope="col">skim_variable</th>
+<th id="n_missing" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">n_missing</th>
+<th id="complete_rate" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">complete_rate</th>
+<th id="factor.ordered" class="gt_col_heading gt_columns_bottom_border gt_center" scope="col">factor.ordered</th>
+<th id="factor.n_unique" class="gt_col_heading gt_columns_bottom_border gt_right" scope="col">factor.n_unique</th>
+<th id="factor.top_counts" class="gt_col_heading gt_columns_bottom_border gt_left" scope="col">factor.top_counts</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">cvdrisk_index_merged</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">4</td>
+<td class="gt_row gt_left" headers="factor.top_counts">2: 500, 0: 262, 3: 123, 4: 49</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">age_categ</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">4</td>
+<td class="gt_row gt_left" headers="factor.top_counts">50-: 341, 30-: 267, 65+: 251, 18-: 75</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">gender</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">3</td>
+<td class="gt_row gt_left" headers="factor.top_counts">2: 504, 1: 427, 3: 3</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">waiting_time_yrs</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">3</td>
+<td class="gt_row gt_left" headers="factor.top_counts">1_2: 599, und: 208, abo: 127</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">edu_level_categ</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">5</td>
+<td class="gt_row gt_left" headers="factor.top_counts">yr1: 335, cer: 263, pos: 182, yr1: 150</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">indig</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">3</td>
+<td class="gt_row gt_left" headers="factor.top_counts">0: 536, 4: 370, 1: 28</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">sleep_categ</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">4</td>
+<td class="gt_row gt_left" headers="factor.top_counts">mod: 792, low: 79, lon: 43, not: 20</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">PHQ_cat</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">5</td>
+<td class="gt_row gt_left" headers="factor.top_counts">Mil: 314, Sev: 276, Mod: 234, Non: 61</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">paincat</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">5</td>
+<td class="gt_row gt_left" headers="factor.top_counts">Mil: 314, Sev: 276, Mod: 234, Non: 61</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="skim_type">factor</td>
+<td class="gt_row gt_left" headers="skim_variable">income_group</td>
+<td class="gt_row gt_right" headers="n_missing">0</td>
+<td class="gt_row gt_right" headers="complete_rate">1</td>
+<td class="gt_row gt_center" headers="factor.ordered">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique">4</td>
+<td class="gt_row gt_left" headers="factor.top_counts">Hig: 724, Low: 140, Upp: 56, Low: 14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Data stats</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Values in data</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Intro correlation</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="initial-model---imbalance-data" class="level3">
+<h3 class="anchored" data-anchor-id="initial-model---imbalance-data">Initial model - imbalance data</h3>
+<section id="v-fold-cross-validation---no-repeats" class="level4">
+<h4 class="anchored" data-anchor-id="v-fold-cross-validation---no-repeats">V-Fold Cross-Validation - no repeats</h4>
+<p>V-fold cross-validation (also known as k-fold cross-validation) randomly splits the data into V groups of roughly equal size (called “folds”). A resample of the analysis data consists of V-1 of the folds while the assessment set contains the final fold. In basic V-fold cross-validation (i.e.&nbsp;no repeats), the number of resamples is equal to V. (v=10)</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>#  10-fold cross-validation using stratification 
+# A tibble: 10 × 2
+   splits           id    
+   &lt;list&gt;           &lt;chr&gt; 
+ 1 &lt;split [628/71]&gt; Fold01
+ 2 &lt;split [628/71]&gt; Fold02
+ 3 &lt;split [629/70]&gt; Fold03
+ 4 &lt;split [629/70]&gt; Fold04
+ 5 &lt;split [629/70]&gt; Fold05
+ 6 &lt;split [629/70]&gt; Fold06
+ 7 &lt;split [629/70]&gt; Fold07
+ 8 &lt;split [629/70]&gt; Fold08
+ 9 &lt;split [630/69]&gt; Fold09
+10 &lt;split [631/68]&gt; Fold10</code></pre>
+</div>
+</div>
+<p>Metrics used to assess the model</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<p><strong>Bagged tree model</strong></p>
+<p><a href="https://baguette.tidymodels.org/">Bagging ensemble model</a></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>══ Workflow [trained] ══════════════════════════════════════════════════════════
+Preprocessor: Recipe
+Model: bag_tree()
+
+── Preprocessor ────────────────────────────────────────────────────────────────
+1 Recipe Step
+
+• step_nzv()
+
+── Model ───────────────────────────────────────────────────────────────────────
+Bagged CART (classification with 25 members)
+
+Variable importance scores include:
+
+# A tibble: 9 × 4
+  term             value std.error  used
+  &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+1 PHQ_cat          49.1      1.45     25
+2 age_categ        44.5      1.67     25
+3 edu_level_categ  43.3      1.48     25
+4 waiting_time_yrs 28.3      1.21     25
+5 income_group     25.7      1.09     25
+6 gender           22.3      1.18     25
+7 sleep_categ      22.1      1.03     25
+8 indig            21.4      0.922    25
+9 paincat           9.82     0.587    25</code></pre>
+</div>
+</div>
+<p>Importance of variable is shown in the <code>value</code>:</p>
+<p>Most important ones:</p>
+<p>-edu_level_categ</p>
+<ul>
+<li><p>PHQ_cat</p></li>
+<li><p>age_categ</p></li>
+</ul>
+<p>interestingly - paincat has the lowest importance</p>
+<p><strong>Model fitting using resamples</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  .metric     .estimator  mean     n std_err .config             
+  &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1 accuracy    multiclass 0.522    10  0.0181 Preprocessor1_Model1
+2 mn_log_loss multiclass 1.11     10  0.0252 Preprocessor1_Model1
+3 pr_auc      macro      0.364    10  0.0107 Preprocessor1_Model1
+4 roc_auc     hand_till  0.625    10  0.0118 Preprocessor1_Model1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="addressing-class-imbalances" class="level3">
+<h3 class="anchored" data-anchor-id="addressing-class-imbalances">Addressing class imbalances</h3>
+<p>Class imbalance refers to the cases where the distribution of classes in the data is uneven, or significantly skewed. In this case a particular class has a larger number of data points compared to other classes. Such imbalance generally leads to results biased towards the majority class which may show higher accuracy in prediction most of the time, while the minority class tends to show poor performance. In severe cases minority class can be completely ignored. This represent a serious issue as generally, it is the minority class is the class of interest, e.g.&nbsp;critical rare events or anomalies.</p>
+<p>While class imbalances is a challenge in machine learning tasks, such cases are quite common in practice and there are different techniques to address them. These techniques include resampling, cost-sensitive learning, algorithmic techniques (i.e.&nbsp;the use of algorithms that are capable of handing class imbalances, such as decision trees or ensember learning approaches), data augmentation approaches (e.g.&nbsp;under/oversampling) and anomaly detection.</p>
+<p>Class imbalances approaches - brief statement</p>
+<p>Class imbalances approaches used in the study - brief statement</p>
+<p>Applying SMOTE Algorithm: generates new examples of the minority class using nearest neighbors of these cases.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  .metric     .estimator  mean     n std_err .config             
+  &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+1 accuracy    multiclass 0.445    10  0.0163 Preprocessor1_Model1
+2 mn_log_loss multiclass 1.43     10  0.101  Preprocessor1_Model1
+3 pr_auc      macro      0.356    10  0.0122 Preprocessor1_Model1
+4 roc_auc     hand_till  0.619    10  0.0123 Preprocessor1_Model1</code></pre>
+</div>
+</div>
+</section>
+<section id="random-forest" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest">random forest</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 8
+    mtry min_n .metric  .estimator  mean     n std_err .config              
+   &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
+ 1     3    17 accuracy multiclass 0.483    10 0.0162  Preprocessor1_Model03
+ 2     4    22 accuracy multiclass 0.482    10 0.0132  Preprocessor1_Model05
+ 3     7    10 accuracy multiclass 0.465    10 0.0156  Preprocessor1_Model09
+ 4     9     9 accuracy multiclass 0.465    10 0.0181  Preprocessor1_Model04
+ 5    21    16 accuracy multiclass 0.463    10 0.0176  Preprocessor1_Model01
+ 6    13    28 accuracy multiclass 0.462    10 0.0135  Preprocessor1_Model08
+ 7    16     4 accuracy multiclass 0.460    10 0.0154  Preprocessor1_Model06
+ 8    25    38 accuracy multiclass 0.452    10 0.0193  Preprocessor1_Model10
+ 9    17    35 accuracy multiclass 0.450    10 0.0145  Preprocessor1_Model02
+10    23    30 accuracy multiclass 0.443    10 0.0174  Preprocessor1_Model07
+11    17    35 roc_auc  hand_till  0.625    10 0.0150  Preprocessor1_Model02
+12    25    38 roc_auc  hand_till  0.624    10 0.0162  Preprocessor1_Model10
+13    13    28 roc_auc  hand_till  0.623    10 0.0147  Preprocessor1_Model08
+14     4    22 roc_auc  hand_till  0.622    10 0.0135  Preprocessor1_Model05
+15    23    30 roc_auc  hand_till  0.621    10 0.0150  Preprocessor1_Model07
+16     7    10 roc_auc  hand_till  0.620    10 0.0108  Preprocessor1_Model09
+17     3    17 roc_auc  hand_till  0.620    10 0.0151  Preprocessor1_Model03
+18    21    16 roc_auc  hand_till  0.618    10 0.0115  Preprocessor1_Model01
+19     9     9 roc_auc  hand_till  0.616    10 0.00956 Preprocessor1_Model04
+20    16     4 roc_auc  hand_till  0.608    10 0.00697 Preprocessor1_Model06</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="neural-network-model" class="level3">
+<h3 class="anchored" data-anchor-id="neural-network-model">Neural network model</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 9
+   hidden_units  penalty epochs .metric  .estimator  mean     n std_err .config 
+          &lt;int&gt;    &lt;dbl&gt;  &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;   
+ 1            9 2.72e- 7    837 accuracy multiclass 0.408    10 0.0164  Preproc…
+ 2            6 4.60e- 6    481 accuracy multiclass 0.394    10 0.0188  Preproc…
+ 3            8 7.03e- 3    358 accuracy multiclass 0.375    10 0.0206  Preproc…
+ 4            9 2.72e- 1    261 accuracy multiclass 0.373    10 0.0218  Preproc…
+ 5            7 9.26e- 2    964 accuracy multiclass 0.369    10 0.0123  Preproc…
+ 6            5 1.29e- 4    128 accuracy multiclass 0.358    10 0.0139  Preproc…
+ 7            4 2.79e- 9    533 accuracy multiclass 0.344    10 0.0193  Preproc…
+ 8            3 1.45e- 8     16 accuracy multiclass 0.337    10 0.0185  Preproc…
+ 9            2 9.71e-10    672 accuracy multiclass 0.333    10 0.0237  Preproc…
+10            1 5.00e- 5    737 accuracy multiclass 0.249    10 0.00846 Preproc…
+11            3 1.45e- 8     16 roc_auc  hand_till  0.621    10 0.0216  Preproc…
+12            6 4.60e- 6    481 roc_auc  hand_till  0.611    10 0.0233  Preproc…
+13            5 1.29e- 4    128 roc_auc  hand_till  0.611    10 0.0185  Preproc…
+14            7 9.26e- 2    964 roc_auc  hand_till  0.597    10 0.0201  Preproc…
+15            9 2.72e- 1    261 roc_auc  hand_till  0.596    10 0.0269  Preproc…
+16            1 5.00e- 5    737 roc_auc  hand_till  0.595    10 0.0239  Preproc…
+17            4 2.79e- 9    533 roc_auc  hand_till  0.589    10 0.0143  Preproc…
+18            2 9.71e-10    672 roc_auc  hand_till  0.584    10 0.0208  Preproc…
+19            9 2.72e- 7    837 roc_auc  hand_till  0.575    10 0.0167  Preproc…
+20            8 7.03e- 3    358 roc_auc  hand_till  0.573    10 0.0169  Preproc…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Stacking results</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 4
+   member                       type        weight class
+   &lt;chr&gt;                        &lt;chr&gt;        &lt;dbl&gt; &lt;fct&gt;
+ 1 .pred_3_rand_forest_res_1_03 rand_forest   5.89 4    
+ 2 .pred_2_nnet_res_1_03        mlp           4.85 4    
+ 3 .pred_3_rand_forest_res_1_05 rand_forest   3.47 3    
+ 4 .pred_4_nnet_res_1_03        mlp           3.01 3    
+ 5 .pred_3_nnet_res_1_09        mlp           2.36 3    
+ 6 .pred_3_nnet_res_1_05        mlp           2.34 4    
+ 7 .pred_2_nnet_res_1_02        mlp           2.11 2    
+ 8 .pred_4_nnet_res_1_08        mlp           2.00 2    
+ 9 .pred_4_rand_forest_res_1_02 rand_forest   1.93 4    
+10 .pred_4_rand_forest_res_1_03 rand_forest   1.90 3    </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="waitlist-analysis-draft_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="evaluating-on-test-data" class="level3">
+<h3 class="anchored" data-anchor-id="evaluating-on-test-data">Evaluating on test data</h3>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc hand_till      0.601</code></pre>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 3
+   cvdrisk_index_merged name                             value
+                  &lt;dbl&gt; &lt;chr&gt;                            &lt;dbl&gt;
+ 1                    1 .pred_class                      0.574
+ 2                    1 .pred_class_nnet_res_1_05        0.383
+ 3                    1 .pred_class_nnet_res_1_08        0.409
+ 4                    1 .pred_class_rand_forest_res_1_08 0.477
+ 5                    1 .pred_class_rand_forest_res_1_03 0.498
+ 6                    1 .pred_class_rand_forest_res_1_06 0.489
+ 7                    1 .pred_class_rand_forest_res_1_02 0.468
+ 8                    1 .pred_class_rand_forest_res_1_10 0.477
+ 9                    1 .pred_class_nnet_res_1_09        0.315
+10                    1 .pred_class_nnet_res_1_01        0.349
+11                    1 .pred_class_nnet_res_1_02        0.391
+12                    1 .pred_class_nnet_res_1_10        0.421
+13                    1 .pred_class_nnet_res_1_07        0.281
+14                    1 .pred_class_nnet_res_1_06        0.421
+15                    1 .pred_class_nnet_res_1_04        0.391
+16                    1 .pred_class_rand_forest_res_1_05 0.494
+17                    1 .pred_class_nnet_res_1_03        0.409
+18                    1 .pred_class_rand_forest_res_1_04 0.494</code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
